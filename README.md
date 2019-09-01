@@ -1,5 +1,7 @@
 # Adventures in Motion Control
 
+[![Build Status](https://travis-ci.com/Michael-F-Bryan/adventures-in-motion-control.svg?branch=master)](https://travis-ci.com/Michael-F-Bryan/adventures-in-motion-control)
+
 A realistic simulator for a 3D printer motion controller.
 
 Think of this as a worked example of how embedded systems are made. The project
