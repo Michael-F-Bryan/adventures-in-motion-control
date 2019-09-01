@@ -14,7 +14,7 @@ script:
 
 before_deploy:
   - cargo doc --verbose
-  - echo '<head><meta http-equiv="refresh" content="0; URL=aimc/index.html" /></head>' > target/doc/index.html
+  - echo '<head><meta http-equiv="refresh" content="0; URL=aimc_hal/index.html" /></head>' > target/doc/index.html
 
 deploy:
   - provider: pages
