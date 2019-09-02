@@ -1,9 +1,5 @@
 language: rust
 cache: cargo
-rust:
-  - "1.31.0"
-  - stable
-  - nightly
 
 before_script:
   - set -e
@@ -11,6 +7,7 @@ before_script:
 matrix:
   include:
 
+  # Make sure the WASM frontend compiles
   - rust: beta
     env: 
       - RUST_BACKTRACE=1
@@ -31,11 +28,12 @@ matrix:
       - cargo check                  --no-default-features --features console_error_panic_hook
       - cargo check --target $TARGET --no-default-features --features console_error_panic_hook
 
+  # And the rest of the project
   - rust: nightly
     env: RUST_BACKTRACE=1
     script:
-      - cargo build --verbose
-      - cargo test --verbose
+      - cargo build --all --verbose
+      - cargo test --all --verbose
     before_deploy:
       - cargo doc --verbose
       - echo '<head><meta http-equiv="refresh" content="0; URL=aimc_hal/index.html" /></head>' > target/doc/index.html
