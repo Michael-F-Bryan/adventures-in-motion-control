@@ -20,7 +20,7 @@ impl Clock for PerformanceClock {
         let secs = (now_ms / 1000.0).floor();
         let secs = secs as u64;
 
-        let nanos = ((now_ms/1000.0).fract() * 1e9).floor();
+        let nanos = ((now_ms / 1000.0).fract() * 1e9).floor();
         let nanos = nanos as u32;
 
         Duration::new(secs as u64, nanos as u32)
@@ -33,9 +33,7 @@ pub struct Inputs {
 }
 
 impl crate::app::Inputs for Inputs {
-    fn clock(&self) -> &dyn Clock {
-        &self.clock
-    }
+    fn clock(&self) -> &dyn Clock { &self.clock }
 }
 
 #[derive(Debug, Clone, Default)]

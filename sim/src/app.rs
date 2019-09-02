@@ -6,9 +6,9 @@ use wasm_bindgen::prelude::*;
 pub struct App;
 
 impl<In: Inputs, Out: Frontend> System<In, Out> for App {
-    fn poll(&mut self, inputs: &In, outputs: &mut Out) {
+    fn poll(&mut self, _inputs: &In, outputs: &mut Out) {
         outputs.log("Polling...");
-     }
+    }
 }
 
 /// The mechanism used by the [`App`] to interact with the outside world.
