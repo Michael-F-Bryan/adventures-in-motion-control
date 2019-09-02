@@ -1,16 +1,10 @@
-mod app;
+pub mod app;
 #[cfg(target_arch = "wasm32")]
 mod platform_specific;
 
-pub use app::{App, Frontend};
+pub use app::App;
 
 use wasm_bindgen::prelude::*;
-
-// When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
-// allocator.
-#[cfg(feature = "wee_alloc")]
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen(start)]
 pub fn on_module_loaded() {
@@ -19,13 +13,11 @@ pub fn on_module_loaded() {
     console_error_panic_hook::set_once();
 }
 
-/// Creates a new world, initializing the various systems and wiring up any 
+/// Creates a new world, initializing the various systems and wiring up any
 /// necessary interrupts.
 #[wasm_bindgen]
 #[cfg(target_arch = "wasm32")]
-pub fn setup_world() -> App {
-    App
-}
+pub fn setup_world() -> App { App }
 
 /// Poll the application, running each system in turn and letting them make
 /// progress.
@@ -33,10 +25,16 @@ pub fn setup_world() -> App {
 #[cfg(target_arch = "wasm32")]
 pub fn poll(app: &mut App) {
     use aimc_hal::System;
-    use platform_specific::{PerformanceClock, Browser};
+    use platform_specific::{Browser, Inputs};
 
-    let clock = PerformanceClock::default();
+    let inputs = Inputs::default();
     let mut frontend = Browser::default();
 
-    app.poll(&clock, &mut frontend);
+    app.poll(&inputs, &mut frontend);
 }
+
+// When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
+// allocator.
+#[cfg(feature = "wee_alloc")]
+#[global_allocator]
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;

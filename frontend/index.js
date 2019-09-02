@@ -10,12 +10,7 @@ function init() {
 
 function animate() {
     console.log("Polling...")
-    try {
-        wasm.poll(world);
-    } catch (error) {
-        console.error(error);
-    }
-
+    wasm.poll(world);
     requestAnimationFrame(animate);
 }
 

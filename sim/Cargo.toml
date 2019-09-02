@@ -34,6 +34,13 @@ aimc-hal = { path = "../hal" }
 [dev-dependencies]
 wasm-bindgen-test = "0.2"
 
+[target]
+
+[target.wasm32-unknown-unknown]
+
+[target.wasm32-unknown-unknown.dependencies]
+web-sys = { version = "0.3", features = ["Window", "Performance", "console"] }
+
 #[profile.release]
 # Tell `rustc` to optimize for small code size.
 #opt-level = "s"
