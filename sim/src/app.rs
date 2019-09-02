@@ -7,7 +7,7 @@ pub struct App;
 
 impl<In: Inputs, Out: Frontend> System<In, Out> for App {
     fn poll(&mut self, inputs: &In, outputs: &mut Out) {
-        // TODO: Implement this
+        outputs.log("Polling...");
      }
 }
 

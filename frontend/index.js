@@ -9,7 +9,6 @@ function init() {
 }
 
 function animate() {
-    console.log("Polling...")
     wasm.poll(world);
     requestAnimationFrame(animate);
 }
