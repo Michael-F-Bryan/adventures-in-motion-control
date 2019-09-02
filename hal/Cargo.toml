@@ -5,6 +5,7 @@ authors = ["Michael Bryan <michaelfbryan@gmail.com>"]
 edition = "2018"
 description = "Adventures in Motion Control"
 license = "MIT or Apache-2.0"
+repository = "https://github.com/Michael-F-Bryan/adventures-in-motion-control"
 publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
