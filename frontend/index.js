@@ -4,7 +4,7 @@ let world;
 
 function init() {
     console.log("Initializing the world");
-    world = wasm.setup_world();
+    world = wasm.setup_world("#fps-counter");
     requestAnimationFrame(animate);
 }
 

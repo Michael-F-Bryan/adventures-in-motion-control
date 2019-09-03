@@ -12,14 +12,22 @@ pub struct FpsCounter {
     last_tick: Duration,
 }
 
+impl FpsCounter {
+    pub fn with_start_time(start: Duration) -> FpsCounter {
+        FpsCounter { last_tick: start }
+    }
+}
+
 impl<In: HasClock, Out: FpsSink> System<In, Out> for FpsCounter {
     fn poll(&mut self, inputs: &In, outputs: &mut Out) {
-        self.last_tick = inputs.clock().elapsed();
+        let now = inputs.clock().elapsed();
 
-        let tick_period = self.last_tick.as_secs_f32();
+        let tick_period = (now - self.last_tick).as_secs_f32();
         outputs.emit_fps(Fps {
             frequency: 1.0 / tick_period,
         });
+
+        self.last_tick = now;
     }
 }
 
@@ -59,9 +67,12 @@ mod tests {
 
     #[test]
     fn record_fps() {
-        let mut fps = FpsCounter::default();
+        let start = Duration::new(42, 0);
+        let period = Duration::from_millis(20);
+        let now = start + period;
+        let mut fps = FpsCounter::with_start_time(start);
         let mut sink = Sink::default();
-        let time = DummyClock(Duration::new(2, 500_000_000));
+        let time = DummyClock(now);
 
         fps.poll(&time, &mut sink);
 
@@ -69,8 +80,9 @@ mod tests {
         assert_eq!(
             sink.0[0],
             Fps {
-                frequency: 1.0 / 2.5
+                frequency: 1000.0 / 20.0,
             }
         );
+        assert_eq!(fps.last_tick, now);
     }
 }

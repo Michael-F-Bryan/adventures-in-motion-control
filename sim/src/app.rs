@@ -1,23 +1,30 @@
-use aimc_hal::{clock::Clock, System};
+use crate::{Browser, Inputs};
+use aimc_hal::System;
+use fps_counter::FpsCounter;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 #[derive(Debug)]
-pub struct App;
+pub struct App {
+    inputs: Inputs,
+    browser: Browser,
+    fps: FpsCounter,
+}
 
-impl<In: Inputs, Out: Frontend> System<In, Out> for App {
-    fn poll(&mut self, _inputs: &In, outputs: &mut Out) {
-        outputs.log("Polling...");
+impl App {
+    pub fn new(inputs: Inputs, browser: Browser) -> App {
+        let fps = FpsCounter::default();
+        App {
+            inputs,
+            browser,
+            fps,
+        }
     }
-}
 
-/// The mechanism used by the [`App`] to interact with the outside world.
-pub trait Frontend {
-    /// Log a message somewhere.
-    fn log(&mut self, message: &str);
-}
+    pub fn poll(&mut self) {
+        self.inputs.begin_tick();
+        self.browser.log("Polling...");
 
-pub trait Inputs {
-    /// Get the system clock.
-    fn clock(&self) -> &dyn Clock;
+        self.fps.poll(&self.inputs, &mut self.browser);
+    }
 }

@@ -1,14 +1,18 @@
-pub mod app;
-#[cfg(target_arch = "wasm32")]
-mod platform_specific;
+mod app;
+mod browser;
+mod clock;
+mod inputs;
 
 pub use app::App;
+pub use browser::Browser;
+pub use clock::PerformanceClock;
+pub use inputs::Inputs;
 
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(start)]
 pub fn on_module_loaded() {
-    // wire up pretty panic messages
+    // wire up pretty panic messages when the WASM module is loaded into memory
     #[cfg(feature = "console_error_panic_hook")]
     console_error_panic_hook::set_once();
 }
@@ -16,22 +20,17 @@ pub fn on_module_loaded() {
 /// Creates a new world, initializing the various systems and wiring up any
 /// necessary interrupts.
 #[wasm_bindgen]
-#[cfg(target_arch = "wasm32")]
-pub fn setup_world() -> App { App }
+pub fn setup_world(fps_div: &str) -> App, JsValue> {
+    let browser = Browser::from_element(fps_div).map_err(|e| e.to_string())?;
+    let inputs = Inputs::default();
+
+    Ok(App::new(inputs, browser))
+}
 
 /// Poll the application, running each system in turn and letting them make
 /// progress.
 #[wasm_bindgen]
-#[cfg(target_arch = "wasm32")]
-pub fn poll(app: &mut App) {
-    use aimc_hal::System;
-    use platform_specific::{Browser, Inputs};
-
-    let inputs = Inputs::default();
-    let mut frontend = Browser::default();
-
-    app.poll(&inputs, &mut frontend);
-}
+pub fn poll(app: &mut App) { app.poll(); }
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
