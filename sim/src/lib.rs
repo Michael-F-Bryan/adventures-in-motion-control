@@ -20,7 +20,7 @@ pub fn on_module_loaded() {
 /// Creates a new world, initializing the various systems and wiring up any
 /// necessary interrupts.
 #[wasm_bindgen]
-pub fn setup_world(fps_div: &str) -> App, JsValue> {
+pub fn setup_world(fps_div: &str) -> Result<App, JsValue> {
     let browser = Browser::from_element(fps_div).map_err(|e| e.to_string())?;
     let inputs = Inputs::default();
 
