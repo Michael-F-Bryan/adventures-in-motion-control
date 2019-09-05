@@ -1,6 +1,5 @@
 use failure::Error;
 use fps_counter::{Fps, FpsSink};
-use wasm_bindgen::JsValue;
 use web_sys::Element;
 
 #[derive(Debug, Clone)]
@@ -26,16 +25,11 @@ impl Browser {
 
         Ok(Browser { fps_div: element })
     }
-
-    pub fn log(&mut self, msg: &str) {
-        let msg = JsValue::from(msg);
-        web_sys::console::log_1(&msg);
-    }
 }
 
 impl FpsSink for Browser {
     fn emit_fps(&mut self, fps: Fps) {
-        let label = format!("FPS: {:.2}Hz", fps.frequency);
+        let label = format!("FPS: {:.1}Hz ({:.1?})", fps.frequency, fps.tick_duration);
         self.fps_div.set_inner_html(&label);
     }
 }

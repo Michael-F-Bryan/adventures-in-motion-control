@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 aimc-hal = { path = "../hal" }
+arraydeque = "0.4"
