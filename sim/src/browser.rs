@@ -35,7 +35,7 @@ impl Browser {
 
 impl FpsSink for Browser {
     fn emit_fps(&mut self, fps: Fps) {
-        let label = format!("FPS: {:.2}Hz", fps.frequency);
+        let label = format!("FPS: {:.1}Hz ({:.1?})", fps.frequency, fps.tick_duration);
         self.fps_div.set_inner_html(&label);
     }
 }

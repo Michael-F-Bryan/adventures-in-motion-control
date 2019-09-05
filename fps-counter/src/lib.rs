@@ -16,7 +16,7 @@ pub struct FpsCounter {
 }
 
 impl FpsCounter {
-    pub const SNAPSHOTS: usize = 128;
+    pub const SNAPSHOTS: usize = 256;
 
     fn calculate_fps(&self) -> Fps {
         Fps {
