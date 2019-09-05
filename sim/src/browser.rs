@@ -1,6 +1,5 @@
 use failure::Error;
 use fps_counter::{Fps, FpsSink};
-use wasm_bindgen::JsValue;
 use web_sys::Element;
 
 #[derive(Debug, Clone)]
@@ -25,11 +24,6 @@ impl Browser {
             .ok_or_else(|| failure::err_msg("Can't find the FPS element"))?;
 
         Ok(Browser { fps_div: element })
-    }
-
-    pub fn log(&mut self, msg: &str) {
-        let msg = JsValue::from(msg);
-        web_sys::console::log_1(&msg);
     }
 }
 

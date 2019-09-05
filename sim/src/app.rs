@@ -23,7 +23,6 @@ impl App {
 
     pub fn poll(&mut self) {
         self.inputs.begin_tick();
-        self.browser.log("Polling...");
 
         self.fps.poll(&self.inputs, &mut self.browser);
     }
