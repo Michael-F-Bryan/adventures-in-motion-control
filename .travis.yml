@@ -13,20 +13,14 @@ matrix:
       - RUST_BACKTRACE=1
       - TARGET=wasm32-unknown-unknown
     before_script:
-      - (test -x $HOME/.cargo/bin/cargo-install-update || cargo install cargo-update)
-      - (test -x $HOME/.cargo/bin/cargo-generate || cargo install --vers "^0.4" cargo-generate)
-      - cargo install-update -a
       - rustup target add $TARGET
     script:
-      - cargo generate --git . --name testing
-      - mv Cargo.toml Cargo.toml.tmpl
-      - cd testing
-      - cargo check
-      - cargo check --target $TARGET
-      - cargo check                  --no-default-features
-      - cargo check --target $TARGET --no-default-features
-      - cargo check                  --no-default-features --features console_error_panic_hook
-      - cargo check --target $TARGET --no-default-features --features console_error_panic_hook
+      - cargo check --all
+      - cargo check --all --target $TARGET
+      - cargo check --all                  --no-default-features
+      - cargo check --all --target $TARGET --no-default-features
+      - cargo check --all                  --no-default-features --features console_error_panic_hook
+      - cargo check --all --target $TARGET --no-default-features --features console_error_panic_hook
 
   # And the rest of the project
   - rust: nightly
