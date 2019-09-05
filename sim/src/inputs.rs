@@ -1,5 +1,6 @@
 use crate::PerformanceClock;
 use aimc_hal::clock::{Clock, HasClock};
+use fps_counter::FpsInputs;
 use std::{cell::Cell, time::Duration};
 
 #[derive(Debug, Clone, Default)]
@@ -14,4 +15,8 @@ impl Inputs {
 
 impl HasClock for Inputs {
     fn clock(&self) -> &dyn Clock { &self.clock }
+}
+
+impl FpsInputs for Inputs {
+    fn tick_started(&self) -> Duration { self.last_tick.get() }
 }

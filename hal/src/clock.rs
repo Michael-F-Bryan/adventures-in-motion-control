@@ -17,7 +17,7 @@ impl<C: Clock> HasClock for C {
 }
 
 /// A [`Clock`] which always returns a pre-defined [`Duration`].
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub struct DummyClock(pub Duration);
 
 impl Clock for DummyClock {
