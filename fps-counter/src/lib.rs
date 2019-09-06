@@ -37,7 +37,7 @@ impl FpsCounter {
         let total_elapsed_time = secs(most_recent - oldest);
 
         // -1 for the fencepost problem
-        let total_ticks = self.ticks.len()  - 1;
+        let total_ticks = self.ticks.len() - 1;
         Some(total_ticks as f32 / total_elapsed_time)
     }
 
@@ -233,7 +233,7 @@ mod tests {
         // The ticks started 20ms apart => 50Hz
         let should_be = Fps {
             frequency: 50.0,
-            tick_duration: Duration::from_millis((50+20) / 2),
+            tick_duration: Duration::from_millis((50 + 20) / 2),
         };
         assert_eq!(got, should_be);
     }

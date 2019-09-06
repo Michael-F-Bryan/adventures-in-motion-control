@@ -1,5 +1,5 @@
 use aimc_hal::clock::Clock;
-use std::time::Duration;
+use core::time::Duration;
 
 /// A [`Clock`] which uses the browser's native `performance.now()` function
 /// to keep track of time.

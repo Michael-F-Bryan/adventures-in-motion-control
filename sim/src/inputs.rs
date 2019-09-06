@@ -1,7 +1,7 @@
 use crate::PerformanceClock;
 use aimc_hal::clock::{Clock, HasClock};
+use core::{cell::Cell, time::Duration};
 use fps_counter::FpsInputs;
-use std::{cell::Cell, time::Duration};
 
 #[derive(Debug, Clone, Default)]
 pub struct Inputs {

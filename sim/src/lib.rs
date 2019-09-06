@@ -1,3 +1,5 @@
+#![no_std]
+
 mod app;
 mod browser;
 mod clock;
@@ -21,7 +23,7 @@ pub fn on_module_loaded() {
 /// necessary interrupts.
 #[wasm_bindgen]
 pub fn setup_world(fps_div: &str) -> Result<App, JsValue> {
-    let browser = Browser::from_element(fps_div).map_err(|e| e.to_string())?;
+    let browser = Browser::from_element(fps_div)?;
     let inputs = Inputs::default();
 
     Ok(App::new(inputs, browser))
