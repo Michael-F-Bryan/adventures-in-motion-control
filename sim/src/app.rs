@@ -27,3 +27,10 @@ impl App {
         self.fps.poll(&self.inputs, &mut self.browser);
     }
 }
+
+#[wasm_bindgen]
+impl App {
+    pub fn on_data_received(&mut self, data: &[u8]) {
+        self.inputs.on_data_received(data);
+    }
+}
