@@ -1,9 +1,9 @@
 [package]
-name = "fps-counter"
+name = "comms"
 version = "0.1.0"
 authors = ["Michael Bryan <michaelfbryan@gmail.com>"]
 edition = "2018"
-description = "FPS counter system for Adventures in Motion Control"
+description = "Communications system for Adventures in Motion Control"
 license = "MIT or Apache-2.0"
 repository = "https://github.com/Michael-F-Bryan/adventures-in-motion-control"
 publish = false
@@ -12,4 +12,3 @@ publish = false
 
 [dependencies]
 aimc-hal = { path = "../hal" }
-arraydeque = "0.4"

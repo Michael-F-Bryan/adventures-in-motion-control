@@ -1,2 +1,2 @@
 [workspace]
-members = ["hal", "sim", "fps-counter"]
+members = ["hal", "sim", "fps-counter", "comms"]
