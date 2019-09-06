@@ -23,8 +23,18 @@ where
     M: MessageHandler,
 {
     fn poll(&mut self, inputs: &I, outputs: &mut Outputs<T, M>) {
-        // A: how do we want to handle overflows?
-        let _ = self.decoder.push_data(inputs.receive());
+        let received = inputs.receive();
+
+        if self.decoder.push_data(received).is_err() {
+            // we've run out of space in the decoder buffer, clear out leftovers
+            // from previous runs and copy in as much new data as possible
+            self.decoder.clear();
+            let len = core::cmp::min(
+                received.len(),
+                self.decoder.remaining_capacity(),
+            );
+            let _ = self.decoder.push_data(&received[..len]);
+        }
 
         loop {
             match self.decoder.decode() {
@@ -36,7 +46,7 @@ where
                     outputs.tx.send(response);
                 },
                 Err(DecodeError::InvalidCRC) => {
-                    unimplemented!("C: How do we handle corrupted packets?")
+                    outputs.message_handler.on_crc_error()
                 },
                 Err(DecodeError::RequiresMoreData) => break,
             }
@@ -86,12 +96,16 @@ impl<'a, T: Tx> Tx for &'a mut T {
 
 pub trait MessageHandler {
     fn handle_message(&mut self, msg: &Packet) -> Result<Packet, CommsError>;
+    /// Callback used to notify the application whenever a CRC error occurs.
+    fn on_crc_error(&mut self) {}
 }
 
 impl<'a, M: MessageHandler> MessageHandler for &'a mut M {
     fn handle_message(&mut self, msg: &Packet) -> Result<Packet, CommsError> {
         (*self).handle_message(msg)
     }
+
+    fn on_crc_error(&mut self) { (*self).on_crc_error(); }
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
