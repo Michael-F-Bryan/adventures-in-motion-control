@@ -13,3 +13,5 @@ publish = false
 [dependencies]
 aimc-hal = { path = "../hal" }
 arraydeque = "0.4"
+scroll = "0.9.2"
+scroll_derive = "0.9.5"

@@ -4,6 +4,7 @@ mod app;
 mod browser;
 mod clock;
 mod inputs;
+mod router;
 
 pub use app::App;
 pub use browser::Browser;

@@ -112,4 +112,5 @@ impl<'a, M: MessageHandler> MessageHandler for &'a mut M {
 pub enum CommsError {
     /// The [`MessageHandler`] doesn't know how to handle the message.
     UnknownMessageType,
+    ParseFailed,
 }

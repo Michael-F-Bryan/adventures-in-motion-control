@@ -1,6 +1,10 @@
 #![no_std]
 
 pub mod clock;
+pub mod messaging;
 mod system;
 
-pub use crate::system::{Ignored, System};
+pub use crate::{
+    messaging::Handler,
+    system::{Ignored, System},
+};

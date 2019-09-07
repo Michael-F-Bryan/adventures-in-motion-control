@@ -1,4 +1,6 @@
+use anpp::Packet;
 use arrayvec::ArrayString;
+use comms::Tx;
 use core::fmt::Write;
 use fps_counter::{Fps, FpsSink};
 use web_sys::Element;
@@ -40,4 +42,8 @@ impl FpsSink for Browser {
             self.fps_div.set_inner_html("FPS: ? Hz");
         }
     }
+}
+
+impl Tx for Browser {
+    fn send(&mut self, _packet: Packet) { unimplemented!() }
 }
