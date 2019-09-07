@@ -5,6 +5,7 @@ let world;
 function init() {
     console.log("Initializing the world");
     world = wasm.setup_world("#fps-counter");
+    world.on_data_sent(data => console.log("Received", data));
     requestAnimationFrame(animate);
 }
 

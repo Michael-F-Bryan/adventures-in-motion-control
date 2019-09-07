@@ -43,7 +43,7 @@ where
                         .message_handler
                         .handle_message(&request)
                         .expect("Unhandled message");
-                    outputs.tx.send(response);
+                    outputs.send(&response);
                 },
                 Err(DecodeError::InvalidCRC) => {
                     outputs.message_handler.on_crc_error()
@@ -80,6 +80,19 @@ impl<T, M> Outputs<T, M> {
     }
 }
 
+impl<T: Tx, M> Outputs<T, M> {
+    fn send(&mut self, packet: &Packet) {
+        let mut buffer = [0; Packet::MAX_PACKET_SIZE + 5];
+        debug_assert!(buffer.len() >= packet.total_length());
+
+        let bytes_written = packet
+            .write_to_buffer(&mut buffer)
+            .expect("our buffer should have been big enough");
+
+        self.tx.send(&buffer[..bytes_written]);
+    }
+}
+
 /// The transmitting end of a *Serial Connection*.
 pub trait Tx {
     /// Queue a [`Packet`] to be sent to the frontend.
@@ -87,11 +100,11 @@ pub trait Tx {
     /// There is no guarantee that the data will all be sent. This may happen if
     /// the receiver isn't listening or they aren't able to receive at this
     /// time.
-    fn send(&mut self, message: Packet);
+    fn send(&mut self, data: &[u8]);
 }
 
 impl<'a, T: Tx> Tx for &'a mut T {
-    fn send(&mut self, message: Packet) { (*self).send(message); }
+    fn send(&mut self, data: &[u8]) { (*self).send(data); }
 }
 
 pub trait MessageHandler {

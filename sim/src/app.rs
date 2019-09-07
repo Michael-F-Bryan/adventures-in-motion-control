@@ -2,6 +2,7 @@ use crate::{router::Router, Browser, Inputs};
 use aimc_hal::System;
 use comms::Communications;
 use fps_counter::FpsCounter;
+use js_sys::Function;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -43,7 +44,17 @@ impl App {
 
 #[wasm_bindgen]
 impl App {
+    /// Send data from the frontend to the simulator.
     pub fn on_data_received(&mut self, data: &[u8]) {
         self.inputs.on_data_received(data);
+    }
+
+    /// Set the callback to be invoked whenever the simulator wants to send data
+    /// to the frontend.
+    ///
+    /// The callback will be passed a [`js_sys::Uint8Array`] as the first
+    /// argument.
+    pub fn on_data_sent(&mut self, callback: Function) {
+        self.browser.set_data_sent(callback);
     }
 }
