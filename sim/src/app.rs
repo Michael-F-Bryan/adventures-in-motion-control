@@ -1,5 +1,6 @@
 use crate::{router::Router, Browser, Inputs};
 use aimc_hal::System;
+use anpp::Packet;
 use comms::Communications;
 use fps_counter::FpsCounter;
 use js_sys::Function;
@@ -56,5 +57,21 @@ impl App {
     /// argument.
     pub fn on_data_sent(&mut self, callback: Function) {
         self.browser.set_data_sent(callback);
+    }
+
+    /// Sends the backend a message (via [`App::on_data_received()`]) to echo
+    /// back a string of text.
+    pub fn echo(&mut self, text: &str) -> Result<(), JsValue> {
+        let pkt = Packet::with_data(42, text.as_bytes())
+            .map_err(|_| "The input text is too long")?;
+
+        let mut buffer = [0; Packet::MAX_PACKET_SIZE + 5];
+        let bytes_written = pkt
+            .write_to_buffer(&mut buffer)
+            .map_err(|_| "Unable to write the packet to a buffer")?;
+
+        self.on_data_received(&buffer[..bytes_written]);
+
+        Ok(())
     }
 }

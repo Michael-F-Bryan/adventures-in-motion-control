@@ -14,6 +14,8 @@ impl<'a> MessageHandler for Router<'a> {
     fn handle_message(&mut self, msg: &Packet) -> Result<Packet, CommsError> {
         match msg.id() {
             1 => dispatch::<_, Clear>(self.fps, msg.contents()),
+            // echo
+            42 => Ok(msg.clone()),
             _ => Err(CommsError::UnknownMessageType),
         }
     }
