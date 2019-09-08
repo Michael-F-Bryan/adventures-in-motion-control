@@ -1,11 +1,15 @@
 use arrayvec::ArrayString;
+use comms::Tx;
 use core::fmt::Write;
 use fps_counter::{Fps, FpsSink};
+use js_sys::{Function, Uint8Array};
+use wasm_bindgen::JsValue;
 use web_sys::Element;
 
 #[derive(Debug, Clone)]
 pub struct Browser {
     fps_div: Element,
+    tx: Option<Function>,
 }
 
 impl Browser {
@@ -20,7 +24,14 @@ impl Browser {
             .map_err(|_| "Invalid selector")?
             .ok_or("Can't find the FPS element")?;
 
-        Ok(Browser { fps_div: element })
+        Ok(Browser {
+            fps_div: element,
+            tx: None,
+        })
+    }
+
+    pub(crate) fn set_data_sent(&mut self, callback: Function) {
+        self.tx = Some(callback);
     }
 }
 
@@ -38,6 +49,24 @@ impl FpsSink for Browser {
             self.fps_div.set_inner_html(&buffer);
         } else {
             self.fps_div.set_inner_html("FPS: ? Hz");
+        }
+    }
+}
+
+impl Tx for Browser {
+    fn send(&mut self, data: &[u8]) {
+        if let Some(ref tx) = self.tx {
+            // efficiently create a typed array directly from WASM memory
+            let buffer = Uint8Array::from(data);
+
+            // then try to invoke the callback
+            let outcome = tx.call1(&JsValue::NULL, &buffer);
+
+            if let Err(e) = outcome {
+                let msg =
+                    JsValue::from("An exception was thrown while sending data");
+                web_sys::console::error_2(&msg, &e);
+            }
         }
     }
 }

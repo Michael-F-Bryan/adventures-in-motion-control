@@ -12,3 +12,4 @@ publish = false
 
 [dependencies]
 aimc-hal = { path = "../hal" }
+anpp = "1.0.1"

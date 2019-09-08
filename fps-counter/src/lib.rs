@@ -6,9 +6,14 @@ extern crate std;
 
 #[allow(unused_imports)]
 use aimc_hal::clock::Clock;
-use aimc_hal::{clock::HasClock, System};
+use aimc_hal::{
+    clock::HasClock,
+    messaging::{Ack, Handler},
+    System,
+};
 use arraydeque::{ArrayDeque, Wrapping};
 use core::{convert::TryInto, time::Duration};
+use scroll_derive::*;
 
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct FpsCounter {
@@ -97,6 +102,19 @@ pub trait FpsSink {
 pub trait FpsInputs: HasClock {
     /// When did the last tick start? (i.e. from [`Clock::elapsed()`])
     fn tick_started(&self) -> Duration;
+}
+
+/// Clear the buffer used when [`FpsCounter`] calculates its rolling average.
+#[derive(Pread, Pwrite, IOread, IOwrite, SizeWith)]
+pub struct Clear {}
+
+impl Handler<Clear> for FpsCounter {
+    type Response = Ack;
+
+    fn handle(&mut self, _msg: Clear) -> Self::Response {
+        self.ticks.clear();
+        Ack::new()
+    }
 }
 
 #[cfg(test)]
