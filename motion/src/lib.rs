@@ -4,7 +4,7 @@
 extern crate std;
 
 use aimc_hal::{
-    automation::{AutomationSequence, Transition},
+    automation::{All, AutomationSequence, Transition},
     axes::{Axes, Limits},
 };
 use uom::si::f32::Velocity;

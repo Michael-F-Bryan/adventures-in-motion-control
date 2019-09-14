@@ -1,5 +1,5 @@
 [package]
-name = "aimc-hal"
+name = "aimc_hal"
 version = "0.1.0"
 authors = ["Michael Bryan <michaelfbryan@gmail.com>"]
 edition = "2018"

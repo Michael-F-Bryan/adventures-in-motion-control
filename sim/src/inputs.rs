@@ -1,9 +1,9 @@
 use crate::PerformanceClock;
+use aimc_comms::Rx;
+use aimc_fps_counter::FpsInputs;
 use aimc_hal::clock::{Clock, HasClock};
 use arrayvec::ArrayVec;
-use comms::Rx;
 use core::{cell::Cell, time::Duration};
-use fps_counter::FpsInputs;
 
 #[derive(Debug, Clone, Default)]
 pub struct Inputs {

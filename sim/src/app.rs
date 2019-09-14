@@ -1,8 +1,8 @@
 use crate::{router::Router, Browser, Inputs};
+use aimc_comms::Communications;
+use aimc_fps_counter::FpsCounter;
 use aimc_hal::System;
 use anpp::Packet;
-use comms::Communications;
-use fps_counter::FpsCounter;
 use js_sys::Function;
 use wasm_bindgen::prelude::*;
 
@@ -38,7 +38,8 @@ impl App {
 
     fn handle_comms(&mut self) {
         let mut router = Router { fps: &mut self.fps };
-        let mut outputs = comms::Outputs::new(&mut self.browser, &mut router);
+        let mut outputs =
+            aimc_comms::Outputs::new(&mut self.browser, &mut router);
         self.comms.poll(&self.inputs, &mut outputs);
     }
 }

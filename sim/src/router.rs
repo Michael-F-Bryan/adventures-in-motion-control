@@ -1,7 +1,7 @@
+use aimc_comms::{CommsError, MessageHandler};
+use aimc_fps_counter::{Clear, FpsCounter};
 use aimc_hal::Handler;
 use anpp::Packet;
-use comms::{CommsError, MessageHandler};
-use fps_counter::{Clear, FpsCounter};
 use scroll::{ctx::TryFromCtx, Pread};
 
 /// A middleman used for dispatching messages to the various systems across the

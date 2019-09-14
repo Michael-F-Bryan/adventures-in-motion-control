@@ -1,7 +1,7 @@
+use aimc_comms::Tx;
+use aimc_fps_counter::{Fps, FpsSink};
 use arrayvec::ArrayString;
-use comms::Tx;
 use core::fmt::Write;
-use fps_counter::{Fps, FpsSink};
 use js_sys::{Function, Uint8Array};
 use wasm_bindgen::JsValue;
 use web_sys::Element;
