@@ -29,7 +29,7 @@ impl Ack {
     /// The ID used when encoded as a [`Packet`].
     pub const ID: u8 = 0;
 
-    pub fn new() -> Ack { Ack::default() }
+    pub const fn new() -> Self { Ack {} }
 }
 
 impl From<Ack> for Packet {

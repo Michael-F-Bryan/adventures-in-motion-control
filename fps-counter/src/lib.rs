@@ -23,6 +23,12 @@ pub struct FpsCounter {
 impl FpsCounter {
     pub const SNAPSHOTS: usize = 256;
 
+    pub fn new() -> Self {
+        FpsCounter {
+            ticks: ArrayDeque::new(),
+        }
+    }
+
     fn calculate_fps(&self) -> Fps {
         Fps {
             frequency: self.frequency().unwrap_or_default(),

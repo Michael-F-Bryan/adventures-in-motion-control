@@ -14,3 +14,4 @@ publish = false
 anpp = "1.0.1"
 scroll_derive = "0.9.5"
 scroll = "0.9.2"
+uom = { version = "0.25.0", features = ["f32", "si"], default_features = false }

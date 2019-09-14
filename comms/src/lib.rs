@@ -9,7 +9,7 @@ pub struct Communications {
 }
 
 impl Communications {
-    pub fn new() -> Communications {
+    pub fn new() -> Self {
         Communications {
             decoder: Decoder::new(),
         }
@@ -72,7 +72,7 @@ pub struct Outputs<T, M> {
 }
 
 impl<T, M> Outputs<T, M> {
-    pub fn new(tx: T, message_handler: M) -> Outputs<T, M> {
+    pub fn new(tx: T, message_handler: M) -> Self {
         Outputs {
             tx,
             message_handler,

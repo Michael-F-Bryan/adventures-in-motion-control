@@ -11,7 +11,3 @@ where
         (*self)(inputs, outputs)
     }
 }
-
-/// A placeholder used to show a [`System`] doesn't require an input or output.
-#[derive(Debug, Copy, Clone, PartialEq)]
-pub struct Ignored;

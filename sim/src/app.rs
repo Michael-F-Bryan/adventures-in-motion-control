@@ -16,7 +16,7 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(inputs: Inputs, browser: Browser) -> App {
+    pub fn new(inputs: Inputs, browser: Browser) -> Self {
         let fps = FpsCounter::default();
         let comms = Communications::new();
         App {
