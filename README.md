@@ -31,5 +31,5 @@ submitted for inclusion in the work by you, as defined in the Apache-2.0
 license, shall be dual licensed as above, without any additional terms or
 conditions.
 
-[blog]: http://adventures.michaelfbryan.com.s3-website-ap-southeast-2.amazonaws.com/tags/adventures-in-motion-control/
+[blog]: http://adventures.michaelfbryan.com/tags/adventures-in-motion-control/
 [api-docs]: https://michael-f-bryan.github.io/adventures-in-motion-control/
