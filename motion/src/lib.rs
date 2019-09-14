@@ -92,6 +92,41 @@ pub enum FaultKind {
     UnexpectedUpperLimit,
 }
 
+/// The *Go To Home* [`AutomationSequence`].
+#[derive(Debug, Clone, PartialEq)]
+pub struct Home<L: Limits, A: Axes> {
+    inner: All<MoveAxisHome, [Option<MoveAxisHome>; 3], L, A>,
+}
+
+impl<L: Limits, A: Axes> Home<L, A> {
+    pub fn new(
+        x_axis: usize,
+        y_axis: usize,
+        z_axis: usize,
+        homing_speed: Velocity,
+    ) -> Self {
+        Home {
+            inner: All::new([
+                Some(MoveAxisHome::new(homing_speed, x_axis)),
+                Some(MoveAxisHome::new(homing_speed, y_axis)),
+                Some(MoveAxisHome::new(homing_speed, z_axis)),
+            ]),
+        }
+    }
+}
+
+impl<L: Limits, A: Axes> AutomationSequence<L, A> for Home<L, A> {
+    type FaultInfo = Fault;
+
+    fn poll(
+        &mut self,
+        inputs: &L,
+        outputs: &mut A,
+    ) -> Transition<Self::FaultInfo> {
+        self.inner.poll(inputs, outputs)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
