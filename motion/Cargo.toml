@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 aimc_hal = { path = "../hal" }
 uom = { version = "0.25.0", features = ["f32", "si"], default_features = false }
+arrayvec = "0.4.11"

@@ -6,11 +6,7 @@ pub trait AutomationSequence<Input, Output> {
     /// Extra info attached to a fault.
     type FaultInfo;
 
-    fn poll(
-        &mut self,
-        inputs: &Input,
-        outputs: &mut Output,
-    ) -> Transition<Self::FaultInfo>;
+    fn poll(&mut self, inputs: &Input, outputs: &mut Output) -> Transition<Self::FaultInfo>;
 }
 
 /// The result of a single call to [`AutomationSequence::poll()`].
@@ -37,10 +33,17 @@ impl<F> Transition<F> {
 /// all to completion, stopping when either a fault is raised or there are no
 /// more incomplete sequences.
 ///
+/// For technical reasons, instead of being generic over the type of
+/// `AutomationSequence` being wrapped, the type parameter is something which
+/// can `DerefMut` into an `[Option<A>]` slice (where `A: AutomationSequence`).
+/// This leaky abstraction should be fixed when [const generics][const] are a
+/// thing.
+///
 /// # Examples
 ///
 /// ```rust
 /// use aimc_hal::automation::{AutomationSequence, Transition, All};
+/// use arrayvec::ArrayVec;
 ///
 /// /// A simple automation sequence which will return `Transition::Incomplete`
 /// /// until it reaches zero.
@@ -61,7 +64,7 @@ impl<F> Transition<F> {
 ///
 /// // make the list of sequences to combine. This needs to be a
 /// // `[Option<CountDown>]` instead of `[CountDown]` for technical reasons.
-/// let items = [Some(CountDown(1)), Some(CountDown(5)), Some(CountDown(2))];
+/// let items = ArrayVec::from([Some(CountDown(1)), Some(CountDown(5)), Some(CountDown(2))]);
 /// // then combine them
 /// let mut seq = All::new(items);
 ///
@@ -77,57 +80,30 @@ impl<F> Transition<F> {
 /// assert_eq!(polls, 5);
 /// ```
 ///
-/// # Technical Reasons/Excuses
-///
-/// Sorry for the horrible type signature! Once [const generics][const] come
-/// along it can be changed to just be generic over the [`AutomationSequence`]
-/// type and number of items being combined, as one would expect (i.e. `seq` in
-/// the example would have been `All<CountDown, const 3>` instead of
-/// `All<CountDown, [Option<CountDown>; 3], (), ()>`).
-///
-/// In general `impl Trait` won't help here, because we'll need to store an
-/// instance of [`All`] in a struct, and that requires either making that struct
-/// generic (leaky abstraction) or being able to name the type.
-///
 /// [const]: https://github.com/rust-lang/rust/issues/44580
 #[derive(Debug, Clone, PartialEq)]
-pub struct All<A, V, I, O> {
+pub struct All<V> {
     sequences: V,
-    _automation_type: PhantomData<A>,
-    _input_type: PhantomData<I>,
-    _output_type: PhantomData<O>,
 }
 
-impl<A, V, I, O> All<A, V, I, O>
-where
-    V: AsMut<[Option<A>]>,
-    A: AutomationSequence<I, O>,
-{
+impl<V> All<V> {
     pub fn new(items: V) -> Self {
-        All {
-            sequences: items,
-            _automation_type: PhantomData,
-            _input_type: PhantomData,
-            _output_type: PhantomData,
-        }
+        All { sequences: items }
     }
 }
 
-impl<I, O, A: AutomationSequence<I, O>, V: AsMut<[Option<A>]>>
-    AutomationSequence<I, O> for All<A, V, I, O>
+impl<I, O, A, V> AutomationSequence<I, O> for All<V>
+where
+    V: core::ops::DerefMut<Target = [Option<A>]>,
+    A: AutomationSequence<I, O>,
 {
     type FaultInfo = A::FaultInfo;
 
-    fn poll(
-        &mut self,
-        inputs: &I,
-        outputs: &mut O,
-    ) -> Transition<Self::FaultInfo> {
+    fn poll(&mut self, inputs: &I, outputs: &mut O) -> Transition<Self::FaultInfo> {
         let variants = self.sequences.as_mut();
 
         for variant in variants.iter_mut() {
-            if let Transition::Fault(f) = poll_variant(variant, inputs, outputs)
-            {
+            if let Transition::Fault(f) = poll_variant(variant, inputs, outputs) {
                 return Transition::Fault(f);
             }
         }
@@ -158,4 +134,36 @@ where
     }
 
     trans
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use arrayvec::ArrayVec;
+
+    #[derive(Debug, Default)]
+    struct Countdown(usize);
+
+    impl AutomationSequence<(), ()> for Countdown {
+        type FaultInfo = ();
+
+        fn poll(&mut self, _: &(), _: &mut ()) -> Transition<Self::FaultInfo> {
+            unimplemented!()
+        }
+    }
+
+    #[test]
+    fn poll_all() {
+        let items = ArrayVec::from([Some(Countdown(1)), Some(Countdown(5))]);
+        let mut items = All::new(items);
+
+        fn assert_is_automation_sequence<A, I, O>(_: &A)
+        where
+            A: AutomationSequence<I, O>,
+        {
+        }
+
+        assert_is_automation_sequence(&Countdown(0));
+        assert_is_automation_sequence(&items);
+    }
 }
