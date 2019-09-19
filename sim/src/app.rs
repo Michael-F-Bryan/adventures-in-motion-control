@@ -2,6 +2,7 @@ use crate::{router::Router, Browser, Inputs};
 use aimc_comms::Communications;
 use aimc_fps_counter::FpsCounter;
 use aimc_hal::System;
+use aimc_motion::Motion;
 use anpp::Packet;
 use js_sys::Function;
 use wasm_bindgen::prelude::*;
@@ -13,17 +14,20 @@ pub struct App {
     browser: Browser,
     fps: FpsCounter,
     comms: Communications,
+    motion: Motion,
 }
 
 impl App {
     pub fn new(inputs: Inputs, browser: Browser) -> Self {
         let fps = FpsCounter::default();
         let comms = Communications::new();
+        let motion = Motion::default();
         App {
             inputs,
             browser,
             fps,
             comms,
+            motion,
         }
     }
 
@@ -37,7 +41,10 @@ impl App {
     }
 
     fn handle_comms(&mut self) {
-        let mut router = Router { fps: &mut self.fps };
+        let mut router = Router {
+            fps: &mut self.fps,
+            motion: &mut self.motion,
+        };
         let mut outputs =
             aimc_comms::Outputs::new(&mut self.browser, &mut router);
         self.comms.poll(&self.inputs, &mut outputs);

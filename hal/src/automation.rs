@@ -1,5 +1,3 @@
-use core::marker::PhantomData;
-
 /// An automation sequence which will either be polled to completion or abort
 /// early with a fault.
 pub trait AutomationSequence<Input, Output> {
