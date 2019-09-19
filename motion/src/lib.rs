@@ -6,9 +6,91 @@ extern crate std;
 use aimc_hal::{
     automation::{All, AutomationSequence, Transition},
     axes::{Axes, Limits},
+    messaging::{Ack, Handler, Nack},
+    System,
 };
 use arrayvec::ArrayVec;
+use scroll_derive::*;
 use uom::si::f32::Velocity;
+
+#[derive(Debug, Default, Clone, PartialEq)]
+pub struct Motion {
+    motion_params: MotionParameters,
+    control_mode: ControlMode,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ControlMode {
+    Idle,
+    Home(Home),
+}
+
+impl<L: Limits, A: Axes> System<L, A> for Motion {
+    fn poll(&mut self, inputs: &L, outputs: &mut A) {
+        match self.control_mode {
+            ControlMode::Idle => {},
+            ControlMode::Home(ref mut home) => match home.poll(inputs, outputs)
+            {
+                Transition::Complete | Transition::Fault(_) => {
+                    self.control_mode = ControlMode::Idle
+                },
+                _ => {},
+            },
+        }
+    }
+}
+
+impl Default for ControlMode {
+    fn default() -> ControlMode { ControlMode::Idle }
+}
+
+#[derive(Debug, Default, Copy, Clone, PartialEq)]
+pub struct MotionParameters {
+    pub x_axis: usize,
+    pub y_axis: usize,
+    pub z_axis: usize,
+    pub homing_speed: Velocity,
+}
+
+impl MotionParameters {
+    pub fn homing_sequence(&self) -> Home {
+        Home::new(self.x_axis, self.y_axis, self.z_axis, self.homing_speed)
+    }
+}
+
+#[derive(
+    Debug,
+    Default,
+    Copy,
+    Clone,
+    PartialEq,
+    Eq,
+    Pread,
+    Pwrite,
+    IOread,
+    IOwrite,
+    SizeWith,
+)]
+pub struct StartHomingSequence {}
+
+impl StartHomingSequence {
+    pub const ID: u8 = 4;
+}
+
+impl Handler<StartHomingSequence> for Motion {
+    type Response = Result<Ack, Nack>;
+
+    fn handle(&mut self, _: StartHomingSequence) -> Self::Response {
+        match self.control_mode {
+            ControlMode::Idle => {
+                self.control_mode =
+                    ControlMode::Home(self.motion_params.homing_sequence());
+                Ok(Ack::default())
+            },
+            _ => Err(Nack::default()),
+        }
+    }
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct MoveAxisHome {
@@ -32,10 +114,18 @@ impl MoveAxisHome {
 impl<L: Limits, A: Axes> AutomationSequence<L, A> for MoveAxisHome {
     type FaultInfo = Fault;
 
-    fn poll(&mut self, inputs: &L, outputs: &mut A) -> Transition<Self::FaultInfo> {
+    fn poll(
+        &mut self,
+        inputs: &L,
+        outputs: &mut A,
+    ) -> Transition<Self::FaultInfo> {
         let limits = match inputs.limit_switches(self.axis_number) {
             Some(l) => l,
-            None => return Transition::Fault(Fault::axis_not_found(self.axis_number)),
+            None => {
+                return Transition::Fault(Fault::axis_not_found(
+                    self.axis_number,
+                ))
+            },
         };
 
         if limits.at_upper_limit {
@@ -45,7 +135,10 @@ impl<L: Limits, A: Axes> AutomationSequence<L, A> for MoveAxisHome {
             outputs.set_target_velocity(self.axis_number, Velocity::default());
             Transition::Complete
         } else {
-            outputs.set_target_velocity(self.axis_number, -1.0 * self.homing_speed);
+            outputs.set_target_velocity(
+                self.axis_number,
+                -1.0 * self.homing_speed,
+            );
             Transition::Incomplete
         }
     }
@@ -89,7 +182,12 @@ pub struct Home {
 }
 
 impl Home {
-    pub fn new(x_axis: usize, y_axis: usize, z_axis: usize, homing_speed: Velocity) -> Self {
+    pub fn new(
+        x_axis: usize,
+        y_axis: usize,
+        z_axis: usize,
+        homing_speed: Velocity,
+    ) -> Self {
         Home {
             inner: All::new(ArrayVec::from([
                 Some(MoveAxisHome::new(homing_speed, x_axis)),
@@ -103,7 +201,11 @@ impl Home {
 impl<L: Limits, A: Axes> AutomationSequence<L, A> for Home {
     type FaultInfo = Fault;
 
-    fn poll(&mut self, inputs: &L, outputs: &mut A) -> Transition<Self::FaultInfo> {
+    fn poll(
+        &mut self,
+        inputs: &L,
+        outputs: &mut A,
+    ) -> Transition<Self::FaultInfo> {
         self.inner.poll(inputs, outputs)
     }
 }
@@ -119,7 +221,10 @@ mod tests {
     struct DummyLimits(HashMap<usize, LimitSwitchState>);
 
     impl Limits for DummyLimits {
-        fn limit_switches(&self, axis_number: usize) -> Option<LimitSwitchState> {
+        fn limit_switches(
+            &self,
+            axis_number: usize,
+        ) -> Option<LimitSwitchState> {
             self.0.get(&axis_number).copied()
         }
     }
@@ -128,7 +233,11 @@ mod tests {
     struct DummyAxes(HashMap<usize, Velocity>);
 
     impl Axes for DummyAxes {
-        fn set_target_velocity(&mut self, axis_number: usize, velocity: Velocity) {
+        fn set_target_velocity(
+            &mut self,
+            axis_number: usize,
+            velocity: Velocity,
+        ) {
             self.0.insert(axis_number, velocity);
         }
 
@@ -139,7 +248,8 @@ mod tests {
 
     #[test]
     fn polling_without_hitting_limits_makes_an_axis_move_backwards() {
-        let mut seq = MoveAxisHome::new(Velocity::new::<meter_per_second>(1.0), 7);
+        let mut seq =
+            MoveAxisHome::new(Velocity::new::<meter_per_second>(1.0), 7);
         let mut axes = DummyAxes::default();
         let mut limits = DummyLimits::default();
         limits.0.insert(7, LimitSwitchState::default());
@@ -153,7 +263,8 @@ mod tests {
 
     #[test]
     fn actuating_the_upper_limit_is_a_fault() {
-        let mut seq = MoveAxisHome::new(Velocity::new::<meter_per_second>(1.0), 7);
+        let mut seq =
+            MoveAxisHome::new(Velocity::new::<meter_per_second>(1.0), 7);
         let mut axes = DummyAxes::default();
         let mut limits = DummyLimits::default();
         limits.0.insert(
@@ -172,7 +283,8 @@ mod tests {
 
     #[test]
     fn actuating_the_lower_limit_completes_the_sequence() {
-        let mut seq = MoveAxisHome::new(Velocity::new::<meter_per_second>(1.0), 7);
+        let mut seq =
+            MoveAxisHome::new(Velocity::new::<meter_per_second>(1.0), 7);
         let mut axes = DummyAxes::default();
         let mut limits = DummyLimits::default();
         limits.0.insert(
@@ -191,7 +303,8 @@ mod tests {
 
     #[test]
     fn trying_to_home_a_nonexistent_axis_is_a_fault() {
-        let mut seq = MoveAxisHome::new(Velocity::new::<meter_per_second>(1.0), 7);
+        let mut seq =
+            MoveAxisHome::new(Velocity::new::<meter_per_second>(1.0), 7);
         let mut axes = DummyAxes::default();
         let limits = DummyLimits::default();
         assert!(limits.limit_switches(seq.axis_number).is_none());
