@@ -22,7 +22,7 @@ impl Inputs {
     pub(crate) fn on_data_received(&mut self, data: &[u8]) {
         // writes up to `capacity` bytes to the buffer. Extra items are silently
         // dropped on the floor.
-        self.rx_buffer.extend(data.into_iter().copied());
+        self.rx_buffer.extend(data.iter().copied());
     }
 }
 

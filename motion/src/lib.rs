@@ -11,7 +11,7 @@ use aimc_hal::{
 };
 use arrayvec::ArrayVec;
 use scroll_derive::*;
-use uom::si::f32::Velocity;
+use uom::si::{f32::Velocity, velocity::millimeter_per_second};
 
 #[derive(Debug, Default, Clone, PartialEq)]
 pub struct Motion {
@@ -44,7 +44,7 @@ impl Default for ControlMode {
     fn default() -> ControlMode { ControlMode::Idle }
 }
 
-#[derive(Debug, Default, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct MotionParameters {
     pub x_axis: usize,
     pub y_axis: usize,
@@ -55,6 +55,17 @@ pub struct MotionParameters {
 impl MotionParameters {
     pub fn homing_sequence(&self) -> Home {
         Home::new(self.x_axis, self.y_axis, self.z_axis, self.homing_speed)
+    }
+}
+
+impl Default for MotionParameters {
+    fn default() -> MotionParameters {
+        MotionParameters {
+            x_axis: 0,
+            y_axis: 1,
+            z_axis: 2,
+            homing_speed: Velocity::new::<millimeter_per_second>(10.0),
+        }
     }
 }
 
