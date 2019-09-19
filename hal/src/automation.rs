@@ -6,7 +6,11 @@ pub trait AutomationSequence<Input, Output> {
     /// Extra info attached to a fault.
     type FaultInfo;
 
-    fn poll(&mut self, inputs: &Input, outputs: &mut Output) -> Transition<Self::FaultInfo>;
+    fn poll(
+        &mut self,
+        inputs: &Input,
+        outputs: &mut Output,
+    ) -> Transition<Self::FaultInfo>;
 }
 
 /// The result of a single call to [`AutomationSequence::poll()`].
@@ -87,9 +91,7 @@ pub struct All<V> {
 }
 
 impl<V> All<V> {
-    pub fn new(items: V) -> Self {
-        All { sequences: items }
-    }
+    pub fn new(items: V) -> Self { All { sequences: items } }
 }
 
 impl<I, O, A, V> AutomationSequence<I, O> for All<V>
@@ -99,11 +101,16 @@ where
 {
     type FaultInfo = A::FaultInfo;
 
-    fn poll(&mut self, inputs: &I, outputs: &mut O) -> Transition<Self::FaultInfo> {
+    fn poll(
+        &mut self,
+        inputs: &I,
+        outputs: &mut O,
+    ) -> Transition<Self::FaultInfo> {
         let variants = self.sequences.as_mut();
 
         for variant in variants.iter_mut() {
-            if let Transition::Fault(f) = poll_variant(variant, inputs, outputs) {
+            if let Transition::Fault(f) = poll_variant(variant, inputs, outputs)
+            {
                 return Transition::Fault(f);
             }
         }

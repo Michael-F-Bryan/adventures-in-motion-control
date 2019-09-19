@@ -114,6 +114,10 @@ pub trait FpsInputs: HasClock {
 #[derive(Pread, Pwrite, IOread, IOwrite, SizeWith)]
 pub struct Clear {}
 
+impl Clear {
+    pub const ID: u8 = 3;
+}
+
 impl Handler<Clear> for FpsCounter {
     type Response = Ack;
 
