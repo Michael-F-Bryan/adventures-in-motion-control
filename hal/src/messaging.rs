@@ -35,3 +35,30 @@ impl Ack {
 impl From<Ack> for Packet {
     fn from(_: Ack) -> Packet { Packet::new(Ack::ID) }
 }
+
+/// The message was not acknowledged.
+#[derive(
+    Debug,
+    Default,
+    Copy,
+    Clone,
+    PartialEq,
+    Eq,
+    Pread,
+    Pwrite,
+    IOread,
+    IOwrite,
+    SizeWith,
+)]
+pub struct Nack {}
+
+impl Nack {
+    /// The ID used when encoded as a [`Packet`].
+    pub const ID: u8 = 1;
+
+    pub const fn new() -> Self { Nack {} }
+}
+
+impl From<Nack> for Packet {
+    fn from(_: Nack) -> Packet { Packet::new(Nack::ID) }
+}
