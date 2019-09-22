@@ -7,6 +7,7 @@ description = "WASM frontend for the Adventures in Motion Control simulator"
 license = "MIT or Apache-2.0"
 repository = "https://github.com/Michael-F-Bryan/adventures-in-motion-control"
 publish = false
+readme = "../README.md"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
