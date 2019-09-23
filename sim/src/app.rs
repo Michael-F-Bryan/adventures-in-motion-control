@@ -1,52 +1,49 @@
-use crate::{router::Router, Browser, Inputs};
+use crate::{router::Router, Browser, Inputs, B};
 use aimc_comms::Communications;
 use aimc_fps_counter::FpsCounter;
 use aimc_hal::System;
 use aimc_motion::Motion;
 use anpp::Packet;
-use js_sys::Function;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 #[derive(Debug)]
 pub struct App {
     inputs: Inputs,
-    browser: Browser,
     fps: FpsCounter,
     comms: Communications,
     motion: Motion,
 }
 
 impl App {
-    pub fn new(inputs: Inputs, browser: Browser) -> Self {
+    pub fn new(inputs: Inputs) -> Self {
         let fps = FpsCounter::default();
         let comms = Communications::new();
         let motion = Motion::default();
         App {
             inputs,
-            browser,
             fps,
             comms,
             motion,
         }
     }
 
-    pub fn poll(&mut self) {
+    pub fn poll(&mut self, browser: &Browser) {
         self.inputs.begin_tick();
+        let mut browser = B(browser);
 
-        self.handle_comms();
-        self.fps.poll(&self.inputs, &mut self.browser);
+        self.handle_comms(&mut browser);
+        self.fps.poll(&self.inputs, &mut browser);
 
         self.inputs.end_tick();
     }
 
-    fn handle_comms(&mut self) {
+    fn handle_comms(&mut self, browser: &mut B) {
         let mut router = Router {
             fps: &mut self.fps,
             motion: &mut self.motion,
         };
-        let mut outputs =
-            aimc_comms::Outputs::new(&mut self.browser, &mut router);
+        let mut outputs = aimc_comms::Outputs::new(browser, &mut router);
         self.comms.poll(&self.inputs, &mut outputs);
     }
 }
@@ -56,15 +53,6 @@ impl App {
     /// Send data from the frontend to the simulator.
     pub fn on_data_received(&mut self, data: &[u8]) {
         self.inputs.on_data_received(data);
-    }
-
-    /// Set the callback to be invoked whenever the simulator wants to send data
-    /// to the frontend.
-    ///
-    /// The callback will be passed a [`js_sys::Uint8Array`] as the first
-    /// argument.
-    pub fn on_data_sent(&mut self, callback: Function) {
-        self.browser.set_data_sent(callback);
     }
 
     /// Sends the backend a message (via [`App::on_data_received()`]) to echo

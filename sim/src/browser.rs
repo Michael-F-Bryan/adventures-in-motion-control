@@ -1,72 +1,31 @@
 use aimc_comms::Tx;
 use aimc_fps_counter::{Fps, FpsSink};
-use arrayvec::ArrayString;
-use core::fmt::Write;
-use js_sys::{Function, Uint8Array};
-use wasm_bindgen::JsValue;
-use web_sys::Element;
+use wasm_bindgen::prelude::*;
 
-#[derive(Debug, Clone)]
-pub struct Browser {
-    fps_div: Element,
-    tx: Option<Function>,
+#[wasm_bindgen]
+extern "C" {
+    /// An arbitrary JavaScript object which implements the [`Browser`]
+    /// interface.
+    pub type Browser;
+
+    #[wasm_bindgen(structural, method)]
+    pub fn set_fps(this: &Browser, frequency: f32, tick_duration_ms: f32);
+
+    #[wasm_bindgen(structural, method)]
+    pub fn send_data(this: &Browser, data: &[u8]);
 }
 
-impl Browser {
-    pub fn from_element(fps_selector: &str) -> Result<Browser, &'static str> {
-        let document = web_sys::window()
-            .ok_or("Can't get a reference to the window")?
-            .document()
-            .ok_or("Can't get a reference to the document")?;
+/// Wrapper around a JavaScript [`Browser`] object which implements the various
+/// system traits.
+pub struct B<'a>(pub &'a Browser);
 
-        let element = document
-            .query_selector(fps_selector)
-            .map_err(|_| "Invalid selector")?
-            .ok_or("Can't find the FPS element")?;
-
-        Ok(Browser {
-            fps_div: element,
-            tx: None,
-        })
-    }
-
-    pub(crate) fn set_data_sent(&mut self, callback: Function) {
-        self.tx = Some(callback);
-    }
-}
-
-impl FpsSink for Browser {
+impl<'a> FpsSink for B<'a> {
     fn emit_fps(&mut self, fps: Fps) {
-        let mut buffer = ArrayString::<[u8; 128]>::default();
-
-        let result = write!(
-            buffer,
-            "FPS: {:.1}Hz ({:.1?})",
-            fps.frequency, fps.tick_duration
-        );
-
-        if result.is_ok() {
-            self.fps_div.set_inner_html(&buffer);
-        } else {
-            self.fps_div.set_inner_html("FPS: ? Hz");
-        }
+        self.0
+            .set_fps(fps.frequency, fps.tick_duration.as_secs_f32() * 1000.0)
     }
 }
 
-impl Tx for Browser {
-    fn send(&mut self, data: &[u8]) {
-        if let Some(ref tx) = self.tx {
-            // efficiently create a typed array directly from WASM memory
-            let buffer = Uint8Array::from(data);
-
-            // then try to invoke the callback
-            let outcome = tx.call1(&JsValue::NULL, &buffer);
-
-            if let Err(e) = outcome {
-                let msg =
-                    JsValue::from("An exception was thrown while sending data");
-                web_sys::console::error_2(&msg, &e);
-            }
-        }
-    }
+impl<'a> Tx for B<'a> {
+    fn send(&mut self, data: &[u8]) { self.0.send_data(data); }
 }

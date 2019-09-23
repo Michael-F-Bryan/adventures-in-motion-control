@@ -7,7 +7,7 @@ mod inputs;
 mod router;
 
 pub use app::App;
-pub use browser::Browser;
+pub use browser::{Browser, B};
 pub use clock::PerformanceClock;
 pub use inputs::Inputs;
 
@@ -23,17 +23,12 @@ pub fn on_module_loaded() {
 /// Creates a new world, initializing the various systems and wiring up any
 /// necessary interrupts.
 #[wasm_bindgen]
-pub fn setup_world(fps_div: &str) -> Result<App, JsValue> {
-    let browser = Browser::from_element(fps_div)?;
-    let inputs = Inputs::default();
-
-    Ok(App::new(inputs, browser))
-}
+pub fn setup_world() -> App { App::new(Inputs::default()) }
 
 /// Poll the application, running each system in turn and letting them make
 /// progress.
 #[wasm_bindgen]
-pub fn poll(app: &mut App) { app.poll(); }
+pub fn poll(app: &mut App, browser: &Browser) { app.poll(browser); }
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
