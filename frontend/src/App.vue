@@ -1,15 +1,32 @@
 <template>
-  <div id="app">
-    <h1>Hello, World!</h1>
-    <p>{{frequency}} Hz ({{tick_duration_us}} μs)</p>
+  <div id="app" class="wrapper">
+    <Sidebar />
+
+    <b-card class="body" no-body>
+      <b-tabs content-class="mt-3" card>
+        <b-tab title="Controls">
+          <b-card-text>I contain buttons and things</b-card-text>
+        </b-tab>
+        <b-tab title="G-Code Viewer" active>
+          <b-card-text>Pretend I'm previewing a g-code program.</b-card-text>
+        </b-tab>
+        <b-tab title="Terminal">
+          <b-card-text>I'm the communications monitor and let you see messages go back and forth.</b-card-text>
+        </b-tab>
+        <b-tab title="Configuration">
+          <b-card-text>This is where you configure the machine.</b-card-text>
+        </b-tab>
+      </b-tabs>
+    </b-card>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import Sidebar from "@/components/Sidebar.vue";
 import * as wasm from "aimc_sim";
 
-@Component({})
+@Component({ components: { Sidebar } })
 export default class App extends Vue {
   private app?: wasm.App;
   private animateToken = 0;
@@ -57,3 +74,22 @@ export default class App extends Vue {
   }
 }
 </script>
+
+<style>
+body {
+  padding: 0;
+  margin: 0;
+}
+
+.wrapper {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.body {
+  flex: 1;
+  margin: 30px;
+}
+</style>
