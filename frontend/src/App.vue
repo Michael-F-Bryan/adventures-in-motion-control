@@ -28,6 +28,12 @@ export default class App extends Vue {
     // make sure the animate method is cancelled when this component is removed
     // from the screen
     cancelAnimationFrame(this.animateToken);
+
+    // don't forget to drop() our App
+    if (this.app) {
+      this.app.free();
+      this.app = undefined;
+    }
   }
 
   animate() {
