@@ -6,7 +6,15 @@
       </b-card-header>
       <b-collapse id="accordion-1" visible accordion="my-accordion" role="tabpanel">
         <b-card-body>
-          <b-card-text>(insert machine state here)</b-card-text>
+          <table class="table">
+            <tr>
+              <td>FPS</td>
+              <td>
+                {{frequency}} Hz
+                <small>({{tick_duration_us}} μs)</small>
+              </td>
+            </tr>
+          </table>
         </b-card-body>
       </b-collapse>
     </b-card>
@@ -48,11 +56,16 @@
   </div>
 </template>
 
-<script>
-import { Component, Vue } from "vue-property-decorator";
+<script lang="ts">
+import { Component, Vue, Prop } from "vue-property-decorator";
 
 @Component({})
-export default class Sidebar extends Vue {}
+export default class Sidebar extends Vue {
+  @Prop({ default: 0, type: Number })
+  public frequency = 0;
+  @Prop({ default: 0, type: Number })
+  public tick_duration_us = 0;
+}
 </script>
 
 <style scoped>

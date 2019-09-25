@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="wrapper">
-    <Sidebar />
+    <Sidebar :frequency="frequency" :tick_duration_us="tick_duration_us" />
 
     <b-card class="body" no-body>
       <b-tabs content-class="mt-3" card>
@@ -8,7 +8,7 @@
           <b-card-text>I contain buttons and things</b-card-text>
         </b-tab>
         <b-tab title="G-Code Viewer" active>
-          <b-card-text>Pretend I'm previewing a g-code program.</b-card-text>
+          <GCodeViewer :text="program" />
         </b-tab>
         <b-tab title="Terminal">
           <b-card-text>I'm the communications monitor and let you see messages go back and forth.</b-card-text>
@@ -24,14 +24,16 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import Sidebar from "@/components/Sidebar.vue";
+import GCodeViewer from "@/components/GCodeViewer.vue";
 import * as wasm from "aimc_sim";
 
-@Component({ components: { Sidebar } })
+@Component({ components: { Sidebar, GCodeViewer } })
 export default class App extends Vue {
   private app?: wasm.App;
   private animateToken = 0;
   public frequency = 0;
   public tick_duration_us = 0;
+  public program = "Pretend I'm a\ng-code program";
 
   mounted() {
     // setup the world
