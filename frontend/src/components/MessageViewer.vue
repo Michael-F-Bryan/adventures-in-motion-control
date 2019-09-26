@@ -1,13 +1,14 @@
 <template>
-  <div class="message">
+  <div class="message" :class="style">
+    <span class="direction">{{arrow}}</span>
     <span class="timestamp">{{timestamp}}</span>
-    {{msg.toString()}}
+    <pre>{{msg.toString()}}</pre>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
-import { Message, isMessage } from "../Message";
+import { Message, isMessage, Direction } from "../Message";
 
 @Component
 export default class MessageViewer extends Vue {
@@ -20,21 +21,58 @@ export default class MessageViewer extends Vue {
       .replace("T", " ")
       .replace("Z", "");
   }
+
+  public get arrow(): string {
+    switch (this.msg.direction) {
+      case Direction.Sent:
+        return "▶";
+      case Direction.Received:
+        return "◀";
+    }
+  }
+
+  public get style(): string {
+    switch (this.msg.direction) {
+      case Direction.Sent:
+        return "sent";
+      case Direction.Received:
+        return "received";
+    }
+  }
 }
 </script>
 
 <style>
 .message {
-  display: inline;
-  color: rgb(51, 255, 0);
+  display: flex;
+}
+
+.message::before {
+  margin-right: 1em;
+}
+
+.message * {
   font: 1.3rem Inconsolata, monospace;
 }
 
+.sent * {
+  color: goldenrod;
+}
+
+.received * {
+  color: skyblue;
+}
+
 .timestamp {
+  margin-right: 1em;
   font-weight: bold;
 }
 
 .timestamp::after {
   content: ":";
+}
+
+.direction {
+  margin-right: 1em;
 }
 </style>

@@ -26,13 +26,16 @@ import Terminal from "@/components/Terminal.vue";
 import Controls from "@/components/Controls.vue";
 import MotionParameters from "./MotionParameters";
 import * as wasm from "aimc_sim";
+import { Direction } from "./Message";
 
 class Echo {
   public readonly timestamp: Date;
+  public readonly direction: Direction;
   public readonly value: string;
 
-  constructor(timestamp: Date, value: string) {
+  constructor(timestamp: Date, direction: Direction, value: string) {
     this.timestamp = timestamp;
+    this.direction = direction;
     this.value = value;
   }
 
@@ -46,7 +49,10 @@ export default class App extends Vue {
   private app?: wasm.App;
   private animateToken = 0;
   public frequency = 0;
-  public messages = [new Echo(new Date(), "Hello, World!")];
+  public messages = [
+    new Echo(new Date(), Direction.Sent, "Hello, World!"),
+    new Echo(new Date(), Direction.Received, "Hello, \nWorld!")
+  ];
   public tick_duration_us = 0;
   public program = "Pretend I'm a\ng-code program";
 

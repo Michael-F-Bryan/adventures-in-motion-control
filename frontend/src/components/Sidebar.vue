@@ -57,7 +57,7 @@ export default class Sidebar extends Vue {
 }
 </script>
 
-<style scoped>
+<style>
 .sidebar {
   margin-top: 30px;
   margin-left: 30px;

@@ -1,10 +1,16 @@
 export interface Message {
+    direction: Direction;
     timestamp: Date;
     toString(): string;
 }
 
+export enum Direction {
+    Sent = 1,
+    Received = 2,
+}
+
 export function isMessage(thing?: any): thing is Message {
-    return thing && thing.timestamp instanceof Date;
+    return thing && thing.timestamp instanceof Date && thing.direction in Direction;
 }
 
 export function areMessages(thing?: any): thing is Message[] {
