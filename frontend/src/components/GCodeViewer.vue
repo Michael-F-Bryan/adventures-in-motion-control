@@ -9,8 +9,8 @@ import { Component, Vue, Prop } from "vue-property-decorator";
 
 @Component({})
 export default class GCodeViewer extends Vue {
-  @Prop({ type: String })
-  public text = "";
+  @Prop({ type: String, default: "" })
+  public text!: string;
 
   public get lines(): string[] {
     return this.text.split("\n");

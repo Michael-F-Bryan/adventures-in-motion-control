@@ -11,7 +11,7 @@
           <GCodeViewer :text="program" />
         </b-tab>
         <b-tab title="Terminal">
-          <b-card-text>I'm the communications monitor and let you see messages go back and forth.</b-card-text>
+          <Terminal :messages="messages" />
         </b-tab>
         <b-tab title="Configuration">
           <b-card-text>This is where you configure the machine.</b-card-text>
@@ -25,13 +25,29 @@
 import { Component, Vue } from "vue-property-decorator";
 import Sidebar from "@/components/Sidebar.vue";
 import GCodeViewer from "@/components/GCodeViewer.vue";
+import Terminal from "@/components/Terminal.vue";
 import * as wasm from "aimc_sim";
 
-@Component({ components: { Sidebar, GCodeViewer } })
+class Echo {
+  public readonly timestamp: Date;
+  public readonly value: string;
+
+  constructor(timestamp: Date, value: string) {
+    this.timestamp = timestamp;
+    this.value = value;
+  }
+
+  public toString(): string {
+    return `Echo "${this.value}"`;
+  }
+}
+
+@Component({ components: { Sidebar, GCodeViewer, Terminal } })
 export default class App extends Vue {
   private app?: wasm.App;
   private animateToken = 0;
   public frequency = 0;
+  public messages = [new Echo(new Date(), "Hello, World!")];
   public tick_duration_us = 0;
   public program = "Pretend I'm a\ng-code program";
 
