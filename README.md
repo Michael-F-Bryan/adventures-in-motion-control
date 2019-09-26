@@ -62,7 +62,7 @@ $ ls dist
 ```
 
 If you want the code to be automatically recompiled whenever there are any
-changes, you can use`watchexec`. Open new terminal end execute.
+changes, you can use`watchexec`. Open new terminal and execute.
 
 TL;DR:
 
