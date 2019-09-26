@@ -5,16 +5,13 @@
     <b-card class="body" no-body>
       <b-tabs content-class="mt-3" card>
         <b-tab title="Controls">
-          <b-card-text>I contain buttons and things</b-card-text>
+          <Controls />
         </b-tab>
         <b-tab title="G-Code Viewer" active>
           <GCodeViewer :text="program" />
         </b-tab>
         <b-tab title="Terminal">
           <Terminal :messages="messages" />
-        </b-tab>
-        <b-tab title="Configuration">
-          <b-card-text>This is where you configure the machine.</b-card-text>
         </b-tab>
       </b-tabs>
     </b-card>
@@ -26,6 +23,8 @@ import { Component, Vue } from "vue-property-decorator";
 import Sidebar from "@/components/Sidebar.vue";
 import GCodeViewer from "@/components/GCodeViewer.vue";
 import Terminal from "@/components/Terminal.vue";
+import Controls from "@/components/Controls.vue";
+import MotionParameters from "./MotionParameters";
 import * as wasm from "aimc_sim";
 
 class Echo {
@@ -42,7 +41,7 @@ class Echo {
   }
 }
 
-@Component({ components: { Sidebar, GCodeViewer, Terminal } })
+@Component({ components: { Sidebar, GCodeViewer, Terminal, Controls } })
 export default class App extends Vue {
   private app?: wasm.App;
   private animateToken = 0;

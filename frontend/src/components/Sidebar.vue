@@ -59,7 +59,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
 
-@Component({})
+@Component
 export default class Sidebar extends Vue {
   @Prop({ default: 0, type: Number })
   public frequency = 0;

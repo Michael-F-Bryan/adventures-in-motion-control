@@ -160,7 +160,7 @@ mod tests {
     #[test]
     fn poll_all() {
         let items = ArrayVec::from([Some(Countdown(1)), Some(Countdown(5))]);
-        let mut items = All::new(items);
+        let items = All::new(items);
 
         fn assert_is_automation_sequence<A, I, O>(_: &A)
         where

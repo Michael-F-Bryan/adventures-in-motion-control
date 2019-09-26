@@ -9,7 +9,7 @@
 import { Component, Vue, Prop } from "vue-property-decorator";
 import { Message, isMessage } from "../Message";
 
-@Component({})
+@Component
 export default class MessageViewer extends Vue {
   @Prop({ required: true, validator: isMessage })
   public msg!: Message;

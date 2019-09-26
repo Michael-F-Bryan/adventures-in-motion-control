@@ -7,7 +7,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
 
-@Component({})
+@Component
 export default class GCodeViewer extends Vue {
   @Prop({ type: String, default: "" })
   public text!: string;

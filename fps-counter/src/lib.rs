@@ -21,7 +21,7 @@ pub struct FpsCounter {
 }
 
 impl FpsCounter {
-    pub const SNAPSHOTS: usize = 256;
+    pub const SNAPSHOTS: usize = 128;
 
     pub fn new() -> Self {
         FpsCounter {
