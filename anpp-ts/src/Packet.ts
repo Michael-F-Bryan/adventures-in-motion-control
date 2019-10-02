@@ -1,4 +1,6 @@
 import { InsufficientCapacity } from "./errors";
+import Header from "./Header";
+import { calculateCRC16 } from "./utils";
 
 export const MaxPacketSize = 255;
 export const HeaderLength = 5;
@@ -33,5 +35,15 @@ export default class Packet {
      */
     public get totalLength(): number {
         return this.length + HeaderLength;
+    }
+
+    public writeTo(buffer: Uint8Array) {
+        InsufficientCapacity.check(this.totalLength, buffer.length);
+
+        const crc = calculateCRC16(this.content);
+        const header = new Header(this.id, this.content.length, crc);
+
+        header.writeTo(buffer, 0);
+        buffer.set(this.content, 5);
     }
 }
