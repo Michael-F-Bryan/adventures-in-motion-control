@@ -1,3 +1,5 @@
+import Header from "./Header";
+
 export class InsufficientCapacity extends Error {
     public readonly required: number;
     public readonly actual: number;
@@ -12,5 +14,19 @@ export class InsufficientCapacity extends Error {
         if (required > actual) {
             throw new InsufficientCapacity(required, actual);
         }
+    }
+}
+
+export class InvalidCRC {
+    public readonly header: Header;
+    public readonly actualCRC: number;
+
+    public constructor(header: Header, crc: number) {
+        this.header = header;
+        this.actualCRC = crc;
+    }
+
+    public toString(): string {
+        return `Expected the CRC to be 0x${this.header.crc} but found 0x${this.actualCRC}`;
     }
 }

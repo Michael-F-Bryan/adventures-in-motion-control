@@ -1,7 +1,7 @@
-import { InsufficientCapacity } from "./errors";
-import { calculateHeaderLRC, calculateCRC16 } from "./utils";
+import { InsufficientCapacity, InvalidCRC } from "./errors";
+import { calculateCRC16 } from "./utils";
 import Header from "./Header";
-import { Packet } from ".";
+import Packet from "./Packet";
 
 export const DecoderBufferSize = 512;
 
@@ -45,18 +45,22 @@ export default class Decoder {
         this.bytesInBuffer += packet.totalLength;
     }
 
-    public decode(): Packet | undefined {
+    /**
+     * Try to decode a single packet and remove it from the buffer.
+     */
+    public decode(): Packet | InvalidCRC | undefined {
         const maybePacket = findPotentialPacket(this.buffer.subarray(0, this.bytesInBuffer));
         if (!maybePacket) {
             return;
         }
 
         let packet;
+        const expectedCRC = calculateCRC16(maybePacket.body);
 
-        if (maybePacket.crcIsValid()) {
+        if (expectedCRC === maybePacket.header.crc) {
             packet = new Packet(maybePacket.header.id, new Uint8Array(maybePacket.body));
         } else {
-            packet = undefined;
+            packet = new InvalidCRC(maybePacket.header, expectedCRC);
         }
 
         this._buffer.copyWithin(0, maybePacket.endIndex);
@@ -65,8 +69,19 @@ export default class Decoder {
         return packet;
     }
 
-    public on(event: "crc-error", listener: () => void): void;
-    public on(event: string, listener: (param: any) => void): void { }
+    /**
+     * Keep decoding data until no more full packets (or CRC errors) are found.
+     */
+    public *decodeAll(): Iterable<Packet | InvalidCRC> {
+        while (true) {
+            const got = this.decode();
+            if (got) {
+                yield got;
+            } else {
+                return;
+            }
+        }
+    }
 }
 
 function findPotentialPacket(buffer: Uint8Array): PotentialPacket | null {
@@ -80,7 +95,7 @@ function findPotentialPacket(buffer: Uint8Array): PotentialPacket | null {
             // the data isn't fully transferred yet
             return null;
         } else {
-            return new PotentialPacket(header, buffer.subarray(start, end + 1), end);
+            return new PotentialPacket(header, buffer.subarray(start, end), end);
         }
     }
 
@@ -96,9 +111,5 @@ class PotentialPacket {
         this.header = header;
         this.body = body;
         this.endIndex = endIndex;
-    }
-
-    public crcIsValid(): boolean {
-        return this.header.crc === calculateCRC16(this.body);
     }
 }

@@ -11,7 +11,7 @@ export default class Header {
         this.crc = crc;
     }
 
-    public static *validHeaderLocations(buffer: Uint8Array): Generator<number, void, undefined> {
+    public static *validHeaderLocations(buffer: Uint8Array): Iterable<number> {
         for (let i = 0; i < buffer.length - 5; i++) {
             const lrc = buffer[i];
             const rest = buffer.subarray(i + 1, i + 5);
