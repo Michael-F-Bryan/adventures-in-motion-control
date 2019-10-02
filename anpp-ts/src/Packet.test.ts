@@ -1,5 +1,4 @@
 import Packet, { MaxPacketSize } from "./Packet";
-import { InsufficientCapacity } from "./errors";
 
 describe("Packet", function () {
     it("sets fields in the constructor", function () {
@@ -15,6 +14,6 @@ describe("Packet", function () {
     it("detects oversized packets", function () {
         const reallyLongBody = new Uint8Array(new Array(MaxPacketSize + 10).fill(0));
 
-        expect(() => new Packet(1, reallyLongBody)).toThrow("Insufficient capacity");
+        expect(() => new Packet(1, reallyLongBody)).toThrow();
     })
 })
