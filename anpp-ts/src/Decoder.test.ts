@@ -47,18 +47,20 @@ describe("Decoder", function () {
         // generate some random data
         const buffer = randomData(DecoderBufferSize);
         // sprinkle a couple valid packets around
-        [0, 25, 73, 188, 222].forEach(ix => {
-            const pkt = new Packet(ix, randomData(ix % 15 + 1));
+        const indices = [0, 25, 73, 188, 222, 480];
+        for (const ix of indices) {
+            const pkt = new Packet(ix % 256, randomData(ix % 15 + 1));
             pkt.writeTo(buffer.subarray(ix));
             expected.push(pkt);
-        })
+        }
         // make a decoder and add our bytes to it
         const decoder = new Decoder();
         decoder.push(buffer);
 
         const got = decoder.decodeAll();
 
-        expect(Array.from(got)).toEqual(expected);
+        const packets = Array.from(got).filter(value => value instanceof Packet);
+        expect(packets).toEqual(expected);
     })
 })
 

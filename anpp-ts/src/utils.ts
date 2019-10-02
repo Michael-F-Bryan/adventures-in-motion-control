@@ -1,11 +1,9 @@
 export function calculateCRC16(buffer: Uint8Array): number {
     let crc = 0xffff;
 
-    buffer.forEach(byte => {
-        const ix = (crc >> 8) ^ byte;
-        crc = (crc << 8) ^ CRC16Table[ix];
-        crc = crc & 0xffff;
-    });
+    for (let i = 0; i < buffer.length; i++) {
+        crc = (crc << 8) & CRC16Table[(crc >> 8) & buffer[i]];
+    }
 
     return crc;
 }
