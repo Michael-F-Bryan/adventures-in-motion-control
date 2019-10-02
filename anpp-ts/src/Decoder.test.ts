@@ -32,7 +32,7 @@ describe("Decoder", function () {
     it("can round-trip a packet", function () {
         const decoder = new Decoder();
         const packet = new Packet(42, new Uint8Array([1, 2, 3, 4, 5]));
-        decoder.push(packet);
+        decoder.pushPacket(packet);
         expect(decoder.length).toEqual(packet.totalLength);
 
         const got = decoder.decode();

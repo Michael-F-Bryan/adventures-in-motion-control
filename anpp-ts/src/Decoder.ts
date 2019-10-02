@@ -25,16 +25,24 @@ export default class Decoder {
         this.bytesInBuffer = 0;
     }
 
-    public push(data: ArrayLike<number> | Packet) {
-        if (data instanceof Packet) {
-            const rest = this._buffer.subarray(this.bytesInBuffer);
-            data.writeTo(rest);
-            this.bytesInBuffer += data.totalLength;
-        } else {
-            InsufficientCapacity.check(data.length, this.remainingCapacity);
-            this._buffer.set(data, this.bytesInBuffer);
-            this.bytesInBuffer += data.length;
-        }
+    /**
+     * Write some bytes to the decoder's internal buffer.
+     * @param data The data to write.
+     */
+    public push(data: ArrayLike<number>) {
+        InsufficientCapacity.check(data.length, this.remainingCapacity);
+        this._buffer.set(data, this.bytesInBuffer);
+        this.bytesInBuffer += data.length;
+    }
+
+    /**
+     * Write a packet to the decoder's internal buffer.
+     * @param packet The packet to write.
+     */
+    public pushPacket(packet: Packet) {
+        const rest = this._buffer.subarray(this.bytesInBuffer);
+        packet.writeTo(rest);
+        this.bytesInBuffer += packet.totalLength;
     }
 
     public decode(): Packet | undefined {
