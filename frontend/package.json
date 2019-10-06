@@ -7,7 +7,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "anpp": "../anpp-ts",
+    "anpp": "git://github.com/Michael-F-Bryan/anpp-ts.git#c6c551ce4937391b3b1788cc5a6553ab793bb610",
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.2",
     "core-js": "^2.6.5",
