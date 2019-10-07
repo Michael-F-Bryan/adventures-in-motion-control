@@ -1,4 +1,4 @@
-import { Request, Response, parse, toPacket } from './messaging';
+import { Request, Response, Ack, Nack, GoHome } from './messaging';
 import { Decoder, Packet } from "anpp";
 
 interface Pending {
@@ -59,5 +59,24 @@ export default class CommsBus {
         } catch (error) {
             pending.reject(error);
         }
+    }
+}
+
+function parse(pkt: Packet): Response | null {
+    switch (pkt.id) {
+        case 0:
+            return new Ack();
+        case 1:
+            return new Nack();
+        default:
+            throw new Error("Unimplemented");
+    }
+}
+
+function toPacket(request: Request): Packet {
+    if (request instanceof GoHome) {
+        return new Packet(1, new Uint8Array());
+    } else {
+        throw new Error("Unimplemented");
     }
 }
