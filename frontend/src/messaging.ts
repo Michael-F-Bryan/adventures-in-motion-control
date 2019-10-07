@@ -1,22 +1,14 @@
-export interface RequestResponseConstructor<M> {
+export type Request = GoHome;
+export type Response = Ack | Nack;
 
-    id(): number;
-    parse(body: Uint8Array): M;
-    encode(message: M): Uint8Array;
-}
+export class Ack { }
 
-export class Nack {
-    static id(): number {
-        return 0;
-    }
+export class Nack { }
 
-    static parse(body: Uint8Array): Nack {
-        throw new Error("Unimplemented");
-    }
+export class GoHome {
+    public readonly speed: number;
 
-    static encode(message: Nack): Uint8Array {
-        throw new Error("Unimplemented");
+    public constructor(speed: number) {
+        this.speed = speed;
     }
 }
-
-let n: RequestResponseConstructor<Nack> = Nack;
