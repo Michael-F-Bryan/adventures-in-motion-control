@@ -25,6 +25,7 @@ import GCodeViewer from "@/components/GCodeViewer.vue";
 import Terminal from "@/components/Terminal.vue";
 import Controls from "@/components/Controls.vue";
 import MotionParameters from "./MotionParameters";
+import CommsBus from "./CommsBus";
 import * as wasm from "aimc_sim";
 import { Direction } from "./Message";
 
@@ -55,6 +56,7 @@ export default class App extends Vue {
   ];
   public tick_duration_us = 0;
   public program = "Pretend I'm a\ng-code program";
+  private comms = new CommsBus();
 
   mounted() {
     // setup the world
@@ -92,7 +94,8 @@ export default class App extends Vue {
   }
 
   send_data(data: Uint8Array) {
-    console.log(new TextDecoder("utf-8").decode(data));
+    const message = new TextDecoder("utf-8").decode(data);
+    console.log(message);
     // TODO: actually handle the message...
   }
 }

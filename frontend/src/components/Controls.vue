@@ -20,13 +20,18 @@
 <script lang="ts">
 import { Component, Vue, Emit, Prop } from "vue-property-decorator";
 import MotionParameters from "../MotionParameters";
+import { Request, Response, GoHome, Nack } from "../messaging";
 import { Packet } from "anpp";
+
+function alwaysFails(req: Request): Promise<Response> {
+  return Promise.resolve(new Nack());
+}
 
 @Component
 export default class Controls extends Vue {
   public motion = new MotionParameters();
   @Prop()
-  public send: (pkt: Packet) => Promise<Packet>;
+  public send: (req: Request) => Promise<Response> = alwaysFails;
 
   onHomePressed(e: Event) {
     e.preventDefault();
@@ -34,7 +39,7 @@ export default class Controls extends Vue {
   }
 
   home() {
-    return { speed: this.motion.homingSpeed };
+    this.send(new GoHome(this.motion.homingSpeed));
   }
 }
 </script>
