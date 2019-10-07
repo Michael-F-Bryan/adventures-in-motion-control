@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "anpp": "^1.0.0",
@@ -16,9 +18,12 @@
     "vue-property-decorator": "^8.1.0"
   },
   "devDependencies": {
+    "@types/jest": "^24.0.18",
     "@vue/cli-plugin-babel": "^3.11.0",
     "@vue/cli-plugin-typescript": "^3.11.0",
     "@vue/cli-service": "^3.11.0",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.1.0",
     "typescript": "^3.4.3",
     "vue-template-compiler": "^2.6.10"
   }

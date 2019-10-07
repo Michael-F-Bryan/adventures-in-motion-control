@@ -61,6 +61,7 @@ export default class App extends Vue {
   mounted() {
     // setup the world
     this.app = wasm.setup_world();
+    this.comms.sendToBackend = this.app.on_data_received.bind(this.app);
 
     // and schedule the animate() function to be called on the next tick
     this.animateToken = requestAnimationFrame(this.animate.bind(this));
@@ -73,6 +74,7 @@ export default class App extends Vue {
 
     // don't forget to drop() our App
     if (this.app) {
+      this.comms.sendToBackend = undefined;
       this.app.free();
       this.app = undefined;
     }
@@ -94,9 +96,7 @@ export default class App extends Vue {
   }
 
   send_data(data: Uint8Array) {
-    const message = new TextDecoder("utf-8").decode(data);
-    console.log(message);
-    // TODO: actually handle the message...
+    this.comms.onDataReceived(data);
   }
 }
 </script>
