@@ -18,19 +18,21 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Emit } from "vue-property-decorator";
+import { Component, Vue, Emit, Prop } from "vue-property-decorator";
 import MotionParameters from "../MotionParameters";
+import { Packet } from "anpp";
 
 @Component
 export default class Controls extends Vue {
   public motion = new MotionParameters();
+  @Prop()
+  public send: (pkt: Packet) => Promise<Packet>;
 
   onHomePressed(e: Event) {
     e.preventDefault();
     this.home();
   }
 
-  @Emit()
   home() {
     return { speed: this.motion.homingSpeed };
   }
