@@ -1,6 +1,6 @@
 #![no_std]
 
-use aimc_hal::System;
+use aimc_hal::{messaging::Nack, System};
 use anpp::{errors::DecodeError, Decoder, Packet};
 
 #[derive(Debug, Default, Clone, PartialEq)]
@@ -42,7 +42,7 @@ where
                     let response = outputs
                         .message_handler
                         .handle_message(&request)
-                        .expect("Unhandled message");
+                        .unwrap_or_else(|_| Packet::new(Nack::ID));
                     outputs.send(&response);
                 },
                 Err(DecodeError::InvalidCRC) => {

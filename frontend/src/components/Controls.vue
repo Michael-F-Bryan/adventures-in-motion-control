@@ -24,14 +24,14 @@ import { Request, Response, GoHome, Nack } from "../messaging";
 import { Packet } from "anpp";
 
 function alwaysFails(req: Request): Promise<Response> {
-  return Promise.resolve(new Nack());
+  return Promise.reject("Not Connected");
 }
 
 @Component
 export default class Controls extends Vue {
   public motion = new MotionParameters();
-  @Prop()
-  public send: (req: Request) => Promise<Response> = alwaysFails;
+  @Prop({ default: () => alwaysFails })
+  public send!: (req: Request) => Promise<Response>;
 
   onHomePressed(e: Event) {
     e.preventDefault();

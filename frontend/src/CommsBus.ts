@@ -1,5 +1,6 @@
 import { Request, Response, Ack, Nack, GoHome } from './messaging';
 import { Decoder, Packet } from "anpp";
+import { Message, Direction } from './Message';
 
 interface Pending {
     readonly started: Date;
@@ -9,11 +10,13 @@ interface Pending {
 
 export default class CommsBus {
     public sendToBackend?: (data: Uint8Array) => void;
+    public messages: Message[] = [];
     private decoder = new Decoder();
     private pending: Pending[] = [];
 
     public send(req: Request): Promise<Response> {
         if (this.sendToBackend) {
+            this.onRequestSent(req);
             this.sendToBackend(toPacket(req).encoded());
 
             return new Promise((resolve, reject) => {
@@ -52,6 +55,7 @@ export default class CommsBus {
             const response = parse(pkt);
 
             if (response) {
+                this.onResponseReceived(response);
                 pending.resolve(response);
             } else {
                 pending.reject(new Error(`Unknown packet type (id: ${pkt.id})`));
@@ -59,6 +63,18 @@ export default class CommsBus {
         } catch (error) {
             pending.reject(error);
         }
+    }
+
+    private onRequestSent(req: Request) {
+        this.pushMessage(Direction.Sent, req);
+    }
+
+    private onResponseReceived(resp: Response) {
+        this.pushMessage(Direction.Received, resp);
+    }
+
+    private pushMessage(direction: Direction, value: any) {
+        this.messages.unshift({ direction, value, timestamp: new Date() });
     }
 }
 

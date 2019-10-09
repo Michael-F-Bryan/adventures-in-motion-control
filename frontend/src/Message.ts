@@ -1,7 +1,7 @@
 export interface Message {
     direction: Direction;
     timestamp: Date;
-    toString(): string;
+    value: any;
 }
 
 export enum Direction {

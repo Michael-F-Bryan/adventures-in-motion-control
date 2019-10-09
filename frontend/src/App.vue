@@ -5,7 +5,7 @@
     <b-card class="body" no-body>
       <b-tabs content-class="mt-3" card>
         <b-tab title="Controls">
-          <Controls />
+          <Controls :send="send" />
         </b-tab>
         <b-tab title="G-Code Viewer" active>
           <GCodeViewer :text="program" />
@@ -27,7 +27,8 @@ import Controls from "@/components/Controls.vue";
 import MotionParameters from "./MotionParameters";
 import CommsBus from "./CommsBus";
 import * as wasm from "aimc_sim";
-import { Direction } from "./Message";
+import { Direction, Message } from "./Message";
+import { Request, Response } from "./messaging";
 
 class Echo {
   public readonly timestamp: Date;
@@ -50,10 +51,6 @@ export default class App extends Vue {
   private app?: wasm.App;
   private animateToken = 0;
   public frequency = 0;
-  public messages = [
-    new Echo(new Date(), Direction.Sent, "Hello, World!"),
-    new Echo(new Date(), Direction.Received, "Hello, \nWorld!")
-  ];
   public tick_duration_us = 0;
   public program = "Pretend I'm a\ng-code program";
   private comms = new CommsBus();
@@ -78,6 +75,14 @@ export default class App extends Vue {
       this.app.free();
       this.app = undefined;
     }
+  }
+
+  public get messages(): Message[] {
+    return this.comms.messages;
+  }
+
+  public send(req: Request): Promise<Response> {
+    return this.comms.send(req);
   }
 
   animate() {
