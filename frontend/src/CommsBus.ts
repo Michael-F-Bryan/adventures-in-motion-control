@@ -1,5 +1,5 @@
 import { Request, Response, Ack, Nack, GoHome } from './messaging';
-import { Decoder, Packet } from "anpp";
+import { Decoder, Packet, ChecksumFailed } from "anpp";
 import { Message, Direction } from './Message';
 
 interface Pending {
@@ -13,6 +13,10 @@ export default class CommsBus {
     public messages: Message[] = [];
     private decoder = new Decoder();
     private pending: Pending[] = [];
+
+    constructor() {
+        this.decoder.on("crc-error", this.onChecksumError.bind(this));
+    }
 
     public send(req: Request): Promise<Response> {
         if (this.sendToBackend) {
@@ -39,6 +43,8 @@ export default class CommsBus {
 
             if (pkt) {
                 this.handlePacket(pkt);
+            } else {
+                break;
             }
         }
     }
@@ -75,6 +81,10 @@ export default class CommsBus {
 
     private pushMessage(direction: Direction, value: any) {
         this.messages.unshift({ direction, value, timestamp: new Date() });
+    }
+
+    private onChecksumError(e: ChecksumFailed) {
+        console.error(`Checksum Failed (ID: ${e.id})`);
     }
 }
 

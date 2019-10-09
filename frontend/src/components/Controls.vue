@@ -35,11 +35,12 @@ export default class Controls extends Vue {
 
   onHomePressed(e: Event) {
     e.preventDefault();
+    console.log("Going Home!");
     this.home();
   }
 
-  home() {
-    this.send(new GoHome(this.motion.homingSpeed));
+  async home() {
+    const response = await this.send(new GoHome(this.motion.homingSpeed));
   }
 }
 </script>

@@ -39,10 +39,16 @@ where
         loop {
             match self.decoder.decode() {
                 Ok(request) => {
-                    let response = outputs
+                    let mut response = outputs
                         .message_handler
                         .handle_message(&request)
                         .unwrap_or_else(|_| Packet::new(Nack::ID));
+
+                    if response.is_empty() {
+                        // a zero-length message isn't valid
+                        let _ = response.push_data(&[0]);
+                    }
+
                     outputs.send(&response);
                 },
                 Err(DecodeError::InvalidCRC) => {
