@@ -75,7 +75,7 @@ export default class CommsBus {
     }
 
     private pushMessage(direction: Direction, value: any) {
-        this.messages.unshift({ direction, value, timestamp: new Date() });
+        this.messages.push({ direction, value, timestamp: new Date() });
     }
 
     private onChecksumError(e: ChecksumFailed) {

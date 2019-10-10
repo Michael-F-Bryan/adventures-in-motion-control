@@ -2,7 +2,7 @@
   <div class="message" :class="style">
     <span class="direction">{{arrow}}</span>
     <span class="timestamp">{{timestamp}}</span>
-    <pre>{{msg.toString()}}</pre>
+    <pre>{{repr}}</pre>
   </div>
 </template>
 
@@ -37,6 +37,17 @@ export default class MessageViewer extends Vue {
         return "sent";
       case Direction.Received:
         return "received";
+    }
+  }
+
+  public get repr(): string {
+    const example = {}.toString();
+    const repr = this.msg.value.toString();
+
+    if (example === repr) {
+      return JSON.stringify(this.msg);
+    } else {
+      return repr;
     }
   }
 }

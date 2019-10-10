@@ -19,7 +19,7 @@ export default class Terminal extends Vue {
 <style>
 .console {
   background-color: black;
-  max-height: 45vh;
+  max-height: 65vh;
   overflow-y: scroll;
   padding: 1em;
 }
