@@ -59,13 +59,8 @@ export default class CommsBus {
 
         try {
             const response = parse(pkt);
-
-            if (response) {
-                this.onResponseReceived(response);
-                pending.resolve(response);
-            } else {
-                pending.reject(new Error(`Unknown packet type (id: ${pkt.id})`));
-            }
+            this.onResponseReceived(response);
+            pending.resolve(response);
         } catch (error) {
             pending.reject(error);
         }
@@ -88,21 +83,21 @@ export default class CommsBus {
     }
 }
 
-function parse(pkt: Packet): Response | null {
+function parse(pkt: Packet): Response {
     switch (pkt.id) {
         case 0:
             return new Ack();
         case 1:
             return new Nack();
         default:
-            throw new Error("Unimplemented");
+            throw new Error(`Unknown packet type (id: ${pkt.id})`);
     }
 }
 
 function toPacket(request: Request): Packet {
     if (request instanceof GoHome) {
-        return new Packet(1, new Uint8Array());
+        return new Packet(1, new Uint8Array([request.speed]));
     } else {
-        throw new Error("Unimplemented");
+        throw new Error("Unable to convert this to a Packet");
     }
 }

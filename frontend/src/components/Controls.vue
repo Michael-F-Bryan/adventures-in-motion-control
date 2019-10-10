@@ -23,24 +23,22 @@ import MotionParameters from "../MotionParameters";
 import { Request, Response, GoHome, Nack } from "../messaging";
 import { Packet } from "anpp";
 
-function alwaysFails(req: Request): Promise<Response> {
-  return Promise.reject("Not Connected");
-}
-
 @Component
 export default class Controls extends Vue {
   public motion = new MotionParameters();
-  @Prop({ default: () => alwaysFails })
+  @Prop({ required: true })
   public send!: (req: Request) => Promise<Response>;
 
-  onHomePressed(e: Event) {
+  public onHomePressed(e: Event) {
     e.preventDefault();
     console.log("Going Home!");
-    this.home();
+    this.home()
+      .then(resp => console.log(resp.toString(), resp))
+      .catch(console.error);
   }
 
-  async home() {
-    const response = await this.send(new GoHome(this.motion.homingSpeed));
+  private home() {
+    return this.send(new GoHome(this.motion.homingSpeed));
   }
 }
 </script>
