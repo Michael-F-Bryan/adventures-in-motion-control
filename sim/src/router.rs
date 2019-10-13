@@ -1,7 +1,7 @@
 use aimc_comms::{CommsError, MessageHandler};
 use aimc_fps_counter::{Clear, FpsCounter};
-use aimc_hal::Handler;
-use aimc_motion::{Motion, StartHomingSequence};
+use aimc_hal::messaging::{Ack, Handler, Nack};
+use aimc_motion::{GcodeProgram, Motion, StartHomingSequence};
 use anpp::Packet;
 use scroll::{ctx::TryFromCtx, Pread};
 
@@ -15,6 +15,7 @@ pub(crate) struct Router<'a> {
 impl<'a> MessageHandler for Router<'a> {
     fn handle_message(&mut self, msg: &Packet) -> Result<Packet, CommsError> {
         match msg.id() {
+            Ack::ID | Nack::ID => Ok(msg.clone()),
             Clear::ID => {
                 dispatch::<_, Clear, _>(self.fps, msg.contents(), Into::into)
             },
@@ -23,6 +24,7 @@ impl<'a> MessageHandler for Router<'a> {
                 msg.contents(),
                 map_result,
             ),
+            GcodeProgram::ID => unimplemented!(),
             // echo
             42 => Ok(msg.clone()),
             _ => Err(CommsError::UnknownMessageType),

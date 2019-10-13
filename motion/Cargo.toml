@@ -12,3 +12,4 @@ uom = { version = "0.25.0", features = ["f32", "si"], default_features = false }
 arrayvec = "0.4.11"
 scroll = "0.9.2"
 scroll_derive = "0.9.5"
+anpp = "2.0.0"
