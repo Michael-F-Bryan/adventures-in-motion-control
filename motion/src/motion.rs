@@ -82,6 +82,6 @@ impl Handler<GcodeProgram<'_>> for Motion {
     type Response = Result<Ack, Nack>;
 
     fn handle(&mut self, gcode: GcodeProgram<'_>) -> Self::Response {
-        unimplemented!()
+        unimplemented!("Received a {:?}", gcode);
     }
 }

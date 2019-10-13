@@ -17,6 +17,5 @@ pub fn encode_gcode_program(
 
     // note: this is effectively a &[u8] slice into the buffer on the stack,
     // hence the seemingly redundant copy
-    let view_into_stack_buffer = Uint8Array::from(&buffer[..bytes_written]);
-    Uint8Array::new(&view_into_stack_buffer )
+    Uint8Array::from(&buffer[..bytes_written])
 }
