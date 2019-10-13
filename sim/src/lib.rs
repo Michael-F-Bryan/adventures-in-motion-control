@@ -11,7 +11,7 @@ pub use app::App;
 pub use browser::{Browser, B};
 pub use clock::PerformanceClock;
 pub use inputs::Inputs;
-pub use utils::*;
+pub use utils::encode_gcode_program;
 
 use wasm_bindgen::prelude::*;
 

@@ -1,5 +1,6 @@
-import { Request, Response, Ack, Nack, GoHome } from './messaging';
+import { Request, Response, Ack, Nack, GoHome, GcodeProgram } from './messaging';
 import { Decoder, Packet, ChecksumFailed } from "anpp";
+import wasm from "aimc_sim";
 import { Message, Direction } from './Message';
 
 interface Pending {
@@ -97,6 +98,9 @@ function parse(pkt: Packet): Response {
 function toPacket(request: Request): Packet {
     if (request instanceof GoHome) {
         return new Packet(1, new Uint8Array([request.speed]));
+    } else if (request instanceof GcodeProgram) {
+        const { chunkNumber, firstLine, textString } = request;
+        return new Packet(5, wasm.encode_gcode_program(chunkNumber, firstLine, textString));
     } else {
         throw new Error("Unable to convert this to a Packet");
     }
