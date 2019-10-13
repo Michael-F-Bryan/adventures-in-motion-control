@@ -1,6 +1,6 @@
 use core::mem;
 use scroll::{
-    ctx::{StrCtx, TryFromCtx},
+    ctx::{StrCtx, TryFromCtx, TryIntoCtx},
     Endian,
 };
 
@@ -80,6 +80,34 @@ impl<'a> TryFromCtx<'a, Endian> for GcodeProgram<'a> {
     }
 }
 
+impl<'a> TryIntoCtx<Endian> for GcodeProgram<'a> {
+    type Error = scroll::Error;
+    type Size = usize;
+
+    fn try_into_ctx(
+        self,
+        buffer: &mut [u8],
+        ctx: Endian,
+    ) -> Result<Self::Size, Self::Error> {
+        let GcodeProgram {
+            chunk_number,
+            first_line,
+            text,
+        } = self;
+        let mut bytes_written = 0;
+
+        bytes_written +=
+            chunk_number.try_into_ctx(&mut buffer[bytes_written..], ctx)?;
+        bytes_written +=
+            first_line.try_into_ctx(&mut buffer[bytes_written..], ctx)?;
+        bytes_written += text
+            .as_bytes()
+            .try_into_ctx(&mut buffer[bytes_written..], ())?;
+
+        Ok(bytes_written)
+    }
+}
+
 fn decode_rest_as_str(from: &[u8]) -> Result<&str, scroll::Error> {
     let (text, _) = <&str as TryFromCtx<StrCtx>>::try_from_ctx(
         from,
@@ -92,6 +120,7 @@ fn decode_rest_as_str(from: &[u8]) -> Result<&str, scroll::Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use scroll::{Pread, Pwrite};
     use std::prelude::v1::*;
 
     #[test]
@@ -109,5 +138,23 @@ mod tests {
 
         assert_eq!(got, expected);
         assert_eq!(bytes_read, buffer.len());
+    }
+
+    #[test]
+    fn round_trip_through_scroll() {
+        let msg = GcodeProgram {
+            chunk_number: 42,
+            first_line: 2 * 256,
+            text: "Hello, World!",
+        };
+        let mut buffer = [0; anpp::Packet::MAX_PACKET_SIZE];
+
+        let bytes_written =
+            buffer.pwrite_with(msg, 0, Endian::network()).unwrap();
+        let buffer = &buffer[..bytes_written];
+        let round_tripped: GcodeProgram =
+            buffer.pread_with(0, Endian::network()).unwrap();
+
+        assert_eq!(round_tripped, msg);
     }
 }

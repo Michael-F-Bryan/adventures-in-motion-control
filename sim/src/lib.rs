@@ -5,11 +5,13 @@ mod browser;
 mod clock;
 mod inputs;
 mod router;
+mod utils;
 
 pub use app::App;
 pub use browser::{Browser, B};
 pub use clock::PerformanceClock;
 pub use inputs::Inputs;
+pub use utils::*;
 
 use wasm_bindgen::prelude::*;
 
