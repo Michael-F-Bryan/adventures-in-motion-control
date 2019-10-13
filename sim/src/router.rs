@@ -24,11 +24,19 @@ impl<'a> MessageHandler for Router<'a> {
                 msg.contents(),
                 map_result,
             ),
-            GcodeProgram::ID => unimplemented!(),
+            GcodeProgram::ID => dispatch::<_, GcodeProgram, _>(
+                self.motion,
+                msg.contents(),
+                map_result,
+            ),
             // echo
             42 => Ok(msg.clone()),
             _ => Err(CommsError::UnknownMessageType),
         }
+    }
+
+    fn on_crc_error(&mut self) {
+        panic!("CRC Error");
     }
 }
 

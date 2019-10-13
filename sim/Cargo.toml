@@ -12,9 +12,6 @@ readme = "../README.md"
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-[features]
-default = ["console_error_panic_hook"]
-
 [dependencies]
 aimc_hal = { path = "../hal" }
 aimc_fps_counter = { path = "../fps-counter" }
@@ -23,7 +20,7 @@ aimc_motion = { path = "../motion" }
 
 wasm-bindgen = "0.2"
 web-sys = { version = "0.3", features = ["Window", "Performance", "console", "Document", "Element"] }
-console_error_panic_hook = { version = "0.1.1", optional = true }
+console_error_panic_hook = { version = "0.1.1" }
 
 arrayvec = "0.4.11"
 anpp = "2.0"

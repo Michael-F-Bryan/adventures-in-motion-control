@@ -1,4 +1,4 @@
-use crate::{Home, StartHomingSequence};
+use crate::{GcodeProgram, Home, StartHomingSequence};
 use aimc_hal::{
     automation::{AutomationSequence, Transition},
     axes::{Axes, Limits},
@@ -75,5 +75,13 @@ impl Handler<StartHomingSequence> for Motion {
             },
             _ => Err(Nack::default()),
         }
+    }
+}
+
+impl Handler<GcodeProgram<'_>> for Motion {
+    type Response = Result<Ack, Nack>;
+
+    fn handle(&mut self, gcode: GcodeProgram<'_>) -> Self::Response {
+        unimplemented!()
     }
 }

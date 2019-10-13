@@ -1,6 +1,6 @@
 import { Request, Response, Ack, Nack, GoHome, GcodeProgram } from './messaging';
 import { Decoder, Packet, ChecksumFailed } from "anpp";
-import wasm from "aimc_sim";
+import * as wasm from "aimc_sim";
 import { Message, Direction } from './Message';
 
 interface Pending {

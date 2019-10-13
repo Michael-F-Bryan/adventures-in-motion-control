@@ -18,7 +18,6 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen(start)]
 pub fn on_module_loaded() {
     // wire up pretty panic messages when the WASM module is loaded into memory
-    #[cfg(feature = "console_error_panic_hook")]
     console_error_panic_hook::set_once();
 }
 
