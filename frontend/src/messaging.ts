@@ -32,17 +32,15 @@ export class GoHome {
 }
 
 export class GcodeProgram {
-    public readonly chunkNumber: number;
     public readonly firstLine: number;
     public readonly text: Uint8Array;
 
-    public constructor(chunkNumber: number, firstLine: number, text: Uint8Array) {
+    public constructor(firstLine: number, text: Uint8Array) {
         const maxTextLength = MaxPacketSize - 2 - 4;
         if (text.byteLength > maxTextLength) {
             throw new Error(`The encoded text can only be at most ${maxTextLength} bytes, found ${text.byteLength}`);
         }
 
-        this.chunkNumber = chunkNumber;
         this.firstLine = firstLine;
         this.text = text;
     }
@@ -52,7 +50,7 @@ export class GcodeProgram {
     }
 
     public toString(): string {
-        const { chunkNumber, firstLine } = this;
-        return JSON.stringify({ chunkNumber, firstLine, text: this.textString });
+        const { firstLine } = this;
+        return JSON.stringify({ firstLine, text: this.textString });
     }
 }
