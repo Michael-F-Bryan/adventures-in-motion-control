@@ -4,10 +4,10 @@
 #[macro_use]
 extern crate std;
 
-pub mod gcode;
 mod gcode_program;
 mod home;
 mod motion;
+pub mod movements;
 
 pub use crate::{
     gcode_program::GcodeProgram,
