@@ -53,35 +53,8 @@ impl Translator {
 
     fn handle_general<C: Callbacks>(&mut self, command: &GCode, mut cb: C) {
         match command.major_number() {
-            0 | 1 => {
-                let end = self.calculate_end(command);
-                let feed_rate = self.calculate_feed_rate(command);
-                cb.linear_interpolate(self.current_location, end, feed_rate);
-
-                self.current_location = end;
-                self.feed_rate = feed_rate;
-            },
-
-            2 | 3 => {
-                let end = self.calculate_end(command);
-                let start = self.current_location;
-                let feed_rate = self.calculate_feed_rate(command);
-                let direction = if command.major_number() == 2 {
-                    Direction::Clockwise
-                } else {
-                    Direction::Anticlockwise
-                };
-
-                match self.get_centre(command) {
-                    Ok(centre) => cb.circular_interpolate(
-                        start, centre, end, direction, feed_rate,
-                    ),
-                    Err(arg) => cb.invalid_argument(command, arg, "Missing"),
-                }
-
-                self.feed_rate = feed_rate;
-                self.current_location = end;
-            },
+            0 | 1 => self.handle_linear_interpolate(command, cb),
+            2 | 3 => self.handle_circular_interpolate(command, cb),
 
             4 => match command.value_for('P') {
                 Some(dwell_time) => {
@@ -97,6 +70,46 @@ impl Translator {
             90 => self.coordinate_mode = CoordinateMode::Absolute,
             91 => self.coordinate_mode = CoordinateMode::Relative,
             _ => cb.unsupported_command(command),
+        }
+    }
+
+    fn handle_linear_interpolate<C: Callbacks>(
+        &mut self,
+        command: &GCode,
+        mut cb: C,
+    ) {
+        let end = self.calculate_end(command);
+        let feed_rate = self.calculate_feed_rate(command);
+        cb.linear_interpolate(self.current_location, end, feed_rate);
+
+        self.current_location = end;
+        self.feed_rate = feed_rate;
+    }
+
+    fn handle_circular_interpolate<C: Callbacks>(
+        &mut self,
+        command: &GCode,
+        mut cb: C,
+    ) {
+        let end = self.calculate_end(command);
+        let start = self.current_location;
+        let feed_rate = self.calculate_feed_rate(command);
+        let direction = if command.major_number() == 2 {
+            Direction::Clockwise
+        } else {
+            Direction::Anticlockwise
+        };
+
+        match self.get_centre(command) {
+            Ok(centre) => {
+                cb.circular_interpolate(
+                    start, centre, end, direction, feed_rate,
+                );
+
+                self.feed_rate = feed_rate;
+                self.current_location = end;
+            },
+            Err(arg) => cb.invalid_argument(command, arg, "Missing"),
         }
     }
 
@@ -247,5 +260,55 @@ impl<'a, C: Callbacks + ?Sized> Callbacks for &'a mut C {
         feed_rate: Velocity,
     ) {
         (**self).circular_interpolate(start, centre, end, direction, feed_rate);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::prelude::v1::*;
+    use uom::si::velocity::millimeter_per_minute;
+
+    #[derive(Debug, Default)]
+    struct MockCallbacks {
+        linear_interp: Vec<(Point, Point, Velocity)>,
+    }
+
+    impl Callbacks for MockCallbacks {
+        fn linear_interpolate(
+            &mut self,
+            start: Point,
+            end: Point,
+            feed_rate: Velocity,
+        ) {
+            self.linear_interp.push((start, end, feed_rate));
+        }
+    }
+
+    fn parse(src: &str) -> GCode {
+        let line = gcode::parse(src).next().unwrap();
+        assert!(line.comments().is_empty());
+        let commands = line.gcodes();
+        assert_eq!(commands.len(), 1);
+        commands[0].clone()
+    }
+
+    #[test]
+    fn simple_linear_interpolation() {
+        let mut trans = Translator::default();
+        let start = trans.current_location;
+        let gcode = parse("G01 X50 Y10 Z-5 F1000.0");
+        let mut mocks = MockCallbacks::default();
+
+        trans.translate(&gcode, &mut mocks);
+
+        assert_eq!(mocks.linear_interp.len(), 1);
+        let got = mocks.linear_interp[0];
+        let expected_end = Point::new::<millimeter>(50.0, 10.0, -5.0);
+        let expected_feed = Velocity::new::<millimeter_per_minute>(1000.0);
+        assert_eq!(got, (start, expected_end, expected_feed));
+
+        assert_eq!(trans.current_location, expected_end);
+        assert_eq!(trans.feed_rate, expected_feed);
     }
 }
