@@ -26,7 +26,6 @@ matrix:
       - yarn link aimc_sim
       - yarn install
       - yarn build
-      - yarn test
 
   # And the rest of the project
   - rust: nightly
