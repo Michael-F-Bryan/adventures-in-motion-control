@@ -15,7 +15,7 @@ matrix:
       - RUST_BACKTRACE=1
     before_script:
       - rustup target add wasm32-unknown-unknown
-      - export "$HOME/.cargo/bin:$PATH"
+      - export PATH="$HOME/.cargo/bin:$PATH"
       - command -v wasm-pack || cargo install --debug wasm-pack
       - npm install --global yarn
     script:
