@@ -67,7 +67,7 @@ export default class Controls extends Vue {
 
   private sendGcode(program: string) {
     const buffer = new TextEncoder().encode(program);
-    return this.send(new GcodeProgram(0, 0, buffer));
+    return this.send(new GcodeProgram(0, buffer));
   }
 }
 </script>

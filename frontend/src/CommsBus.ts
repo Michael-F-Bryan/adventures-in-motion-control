@@ -99,8 +99,8 @@ function toPacket(request: Request): Packet {
     if (request instanceof GoHome) {
         return new Packet(1, new Uint8Array([request.speed]));
     } else if (request instanceof GcodeProgram) {
-        const { chunkNumber, firstLine, textString } = request;
-        return new Packet(5, wasm.encode_gcode_program(chunkNumber, firstLine, textString));
+        const { firstLine, textString } = request;
+        return new Packet(5, wasm.encode_gcode_program(firstLine, textString));
     } else {
         throw new Error("Unable to convert this to a Packet");
     }
