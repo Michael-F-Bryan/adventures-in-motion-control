@@ -1,5 +1,6 @@
 language: rust
-cache: cargo
+cache: 
+  - cargo
 
 before_script:
   - set -e
@@ -7,23 +8,28 @@ before_script:
 matrix:
   include:
 
-  # Make sure the WASM frontend compiles
+  # Make sure the WASM+Vue frontend compiles
   - rust: beta
+    name: frontend
     env: 
       - RUST_BACKTRACE=1
-      - TARGET=wasm32-unknown-unknown
     before_script:
-      - rustup target add $TARGET
+      - rustup target add wasm32-unknown-unknown
+      - export PATH="$HOME/.cargo/bin:$PATH"
+      - command -v wasm-pack || cargo install --debug wasm-pack
+      - npm install --global yarn
     script:
-      - cargo check --all
-      - cargo check --all --target $TARGET
-      - cargo check --all                  --no-default-features
-      - cargo check --all --target $TARGET --no-default-features
-      - cargo check --all                  --no-default-features --features console_error_panic_hook
-      - cargo check --all --target $TARGET --no-default-features --features console_error_panic_hook
+      - cd sim
+      - wasm-pack build
+      - cd pkg && yarn link 
+      - cd ../../frontend
+      - yarn link aimc_sim
+      - yarn install
+      - yarn build
 
   # And the rest of the project
   - rust: nightly
+    name: backend
     env: RUST_BACKTRACE=1
     script:
       - cargo build --all --verbose
