@@ -1,3 +1,8 @@
+use core::{
+    mem::{self, MaybeUninit},
+    ptr,
+};
+
 /// An automation sequence which will either be polled to completion or abort
 /// early with a fault.
 pub trait AutomationSequence<Input, Output> {
@@ -35,17 +40,10 @@ impl<F> Transition<F> {
 /// all to completion, stopping when either a fault is raised or there are no
 /// more incomplete sequences.
 ///
-/// For technical reasons, instead of being generic over the type of
-/// `AutomationSequence` being wrapped, the type parameter is something which
-/// can `DerefMut` into an `[Option<A>]` slice (where `A: AutomationSequence`).
-/// This leaky abstraction should be fixed when [const generics][const] are a
-/// thing.
-///
 /// # Examples
 ///
 /// ```rust
 /// use aimc_hal::automation::{AutomationSequence, Transition, All};
-/// use arrayvec::ArrayVec;
 ///
 /// /// A simple automation sequence which will return `Transition::Incomplete`
 /// /// until it reaches zero.
@@ -64,11 +62,8 @@ impl<F> Transition<F> {
 ///     }
 /// }
 ///
-/// // make the list of sequences to combine. This needs to be a
-/// // `[Option<CountDown>]` instead of `[CountDown]` for technical reasons.
-/// let items = ArrayVec::from([Some(CountDown(1)), Some(CountDown(5)), Some(CountDown(2))]);
-/// // then combine them
-/// let mut seq = All::new(items);
+/// // Combine the sequences into one big automation sequence
+/// let mut seq = All::new([CountDown(1), CountDown(5), CountDown(2)]);
 ///
 /// // we'll keep track of the number of polls
 /// let mut polls = 0;
@@ -83,19 +78,52 @@ impl<F> Transition<F> {
 /// ```
 ///
 /// [const]: https://github.com/rust-lang/rust/issues/44580
-#[derive(Debug, Clone, PartialEq)]
-pub struct All<V> {
-    sequences: V,
-}
-
-impl<V> All<V> {
-    pub fn new(items: V) -> Self { All { sequences: items } }
-}
-
-impl<I, O, A, V> AutomationSequence<I, O> for All<V>
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub struct All<A, const N: usize>
 where
-    V: core::ops::DerefMut<Target = [Option<A>]>,
+    [Option<A>; N]: core::array::LengthAtMost32,
+{
+    sequences: [Option<A>; N],
+}
+
+impl<A, const N: usize> All<A, { N }>
+where
+    [Option<A>; N]: core::array::LengthAtMost32,
+{
+    pub fn new(items: [A; N]) -> Self {
+        unsafe {
+            // An array of MaybeUninit is always valid
+            let mut sequences =
+                MaybeUninit::<[MaybeUninit<Option<A>>; N]>::uninit();
+
+            for i in 0..N {
+                // get a pointer to the item we want to copy
+                let item = items.as_ptr().add(i);
+
+                // an array of MaybeUninit is always valid
+                let sequences = &mut *sequences.as_mut_ptr();
+
+                // copy the item across, transferring ownership to sequences
+                sequences
+                    .as_mut_ptr()
+                    .add(i)
+                    .write(MaybeUninit::new(Some(ptr::read(item))));
+            }
+
+            // The original variable no longer has ownership
+            mem::forget(items);
+
+            All {
+                sequences: mem::transmute_copy(&sequences),
+            }
+        }
+    }
+}
+
+impl<I, O, A, const N: usize> AutomationSequence<I, O> for All<A, { N }>
+where
     A: AutomationSequence<I, O>,
+    [Option<A>; N]: core::array::LengthAtMost32,
 {
     type FaultInfo = A::FaultInfo;
 
@@ -144,7 +172,6 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use arrayvec::ArrayVec;
 
     #[derive(Debug, Default)]
     struct Countdown(usize);
@@ -159,8 +186,7 @@ mod tests {
 
     #[test]
     fn poll_all() {
-        let items = ArrayVec::from([Some(Countdown(1)), Some(Countdown(5))]);
-        let items = All::new(items);
+        let items = All::new([Countdown(1), Countdown(5)]);
 
         fn assert_is_automation_sequence<A, I, O>(_: &A)
         where

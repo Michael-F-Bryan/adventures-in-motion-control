@@ -1,4 +1,5 @@
 #![no_std]
+#![feature(const_generics, const_generic_impls_guard)]
 
 pub mod automation;
 pub mod axes;

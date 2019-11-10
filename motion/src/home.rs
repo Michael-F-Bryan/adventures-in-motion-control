@@ -2,7 +2,6 @@ use aimc_hal::{
     automation::{All, AutomationSequence, Transition},
     axes::{Axes, Limits},
 };
-use arrayvec::ArrayVec;
 use scroll_derive::*;
 use uom::si::f32::Velocity;
 
@@ -111,7 +110,7 @@ pub enum FaultKind {
 /// The *Go To Home* [`AutomationSequence`].
 #[derive(Debug, Clone, PartialEq)]
 pub struct Home {
-    inner: All<ArrayVec<[Option<MoveAxisHome>; 3]>>,
+    inner: All<MoveAxisHome, { 3 }>,
 }
 
 impl Home {
@@ -122,11 +121,11 @@ impl Home {
         homing_speed: Velocity,
     ) -> Self {
         Home {
-            inner: All::new(ArrayVec::from([
-                Some(MoveAxisHome::new(homing_speed, x_axis)),
-                Some(MoveAxisHome::new(homing_speed, y_axis)),
-                Some(MoveAxisHome::new(homing_speed, z_axis)),
-            ])),
+            inner: All::new([
+                MoveAxisHome::new(homing_speed, x_axis),
+                MoveAxisHome::new(homing_speed, y_axis),
+                MoveAxisHome::new(homing_speed, z_axis),
+            ]),
         }
     }
 }

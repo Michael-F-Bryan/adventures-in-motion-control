@@ -9,7 +9,7 @@ matrix:
   include:
 
   # Make sure the WASM+Vue frontend compiles
-  - rust: beta
+  - rust: nightly
     name: frontend
     env: 
       - RUST_BACKTRACE=1
