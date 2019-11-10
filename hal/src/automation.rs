@@ -1,4 +1,5 @@
 use core::{
+    fmt::{self, Debug, Formatter},
     mem::{self, MaybeUninit},
     ptr,
 };
@@ -78,18 +79,11 @@ impl<F> Transition<F> {
 /// ```
 ///
 /// [const]: https://github.com/rust-lang/rust/issues/44580
-#[derive(Debug, Copy, Clone, PartialEq)]
-pub struct All<A, const N: usize>
-where
-    [Option<A>; N]: core::array::LengthAtMost32,
-{
+pub struct All<A, const N: usize> {
     sequences: [Option<A>; N],
 }
 
-impl<A, const N: usize> All<A, { N }>
-where
-    [Option<A>; N]: core::array::LengthAtMost32,
-{
+impl<A, const N: usize> All<A, { N }> {
     pub fn new(items: [A; N]) -> Self {
         unsafe {
             // An array of MaybeUninit is always valid
@@ -123,7 +117,6 @@ where
 impl<I, O, A, const N: usize> AutomationSequence<I, O> for All<A, { N }>
 where
     A: AutomationSequence<I, O>,
-    [Option<A>; N]: core::array::LengthAtMost32,
 {
     type FaultInfo = A::FaultInfo;
 
@@ -146,6 +139,65 @@ where
         } else {
             Transition::Incomplete
         }
+    }
+}
+
+// prefer to manually implement these instead of using #[derive] so it doesn't
+// pollute the `All` type signature with implementation details. Should be
+// resolved once `#[feature(const_generic_impls_guard)]` is removed.
+
+impl<A, const N: usize> Default for All<A, { N }>
+where
+    [Option<A>; N]: core::array::LengthAtMost32,
+    [Option<A>; N]: Default,
+{
+    fn default() -> All<A, { N }> {
+        All {
+            sequences: Default::default(),
+        }
+    }
+}
+
+impl<A, const N: usize> Copy for All<A, { N }>
+where
+    [Option<A>; N]: core::array::LengthAtMost32,
+    [Option<A>; N]: Copy,
+{
+}
+
+impl<A, const N: usize> Clone for All<A, { N }>
+where
+    [Option<A>; N]: core::array::LengthAtMost32,
+    [Option<A>; N]: Clone,
+{
+    fn clone(&self) -> All<A, { N }> {
+        All {
+            sequences: self.sequences.clone(),
+        }
+    }
+}
+
+impl<A, const N: usize> Debug for All<A, { N }>
+where
+    [Option<A>; N]: core::array::LengthAtMost32,
+    [Option<A>; N]: Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        let All { ref sequences } = *self;
+
+        f.debug_struct("All").field("sequences", sequences).finish()
+    }
+}
+
+impl<A, const N: usize> PartialEq for All<A, { N }>
+where
+    [Option<A>; N]: core::array::LengthAtMost32,
+    [Option<A>; N]: PartialEq,
+{
+    fn eq(&self, other: &Self) -> bool {
+        let All { ref sequences } = *self;
+
+        sequences == &other.sequences
     }
 }
 
