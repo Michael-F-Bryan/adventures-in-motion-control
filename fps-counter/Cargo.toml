@@ -12,6 +12,6 @@ publish = false
 
 [dependencies]
 aimc_hal = { path = "../hal" }
-arraydeque = "0.4"
+arraydeque = { version = "0.4", default-features = false }
 scroll = "0.10"
 scroll_derive = "0.10"
