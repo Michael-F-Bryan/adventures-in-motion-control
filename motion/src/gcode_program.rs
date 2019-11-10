@@ -41,12 +41,11 @@ impl<'a> GcodeProgram<'a> {
 
 impl<'a> TryFromCtx<'a, Endian> for GcodeProgram<'a> {
     type Error = scroll::Error;
-    type Size = usize;
 
     fn try_from_ctx(
         from: &'a [u8],
         ctx: Endian,
-    ) -> Result<(Self, Self::Size), Self::Error> {
+    ) -> Result<(Self, usize), Self::Error> {
         let total_length = from.len();
 
         let (first_line, bytes_read) = TryFromCtx::try_from_ctx(from, ctx)?;
@@ -59,13 +58,12 @@ impl<'a> TryFromCtx<'a, Endian> for GcodeProgram<'a> {
 
 impl<'a> TryIntoCtx<Endian> for GcodeProgram<'a> {
     type Error = scroll::Error;
-    type Size = usize;
 
     fn try_into_ctx(
         self,
         buffer: &mut [u8],
         ctx: Endian,
-    ) -> Result<Self::Size, Self::Error> {
+    ) -> Result<usize, Self::Error> {
         let GcodeProgram { first_line, text } = self;
         let mut bytes_written = 0;
 

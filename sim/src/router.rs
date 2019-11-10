@@ -49,7 +49,7 @@ fn dispatch<'a, H, M, F>(
 ) -> Result<Packet, CommsError>
 where
     H: Handler<M>,
-    M: TryFromCtx<'a, scroll::Endian, Size = usize>,
+    M: TryFromCtx<'a, scroll::Endian>,
     M::Error: From<scroll::Error>,
     F: Fn(H::Response) -> Packet,
 {
