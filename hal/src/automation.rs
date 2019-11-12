@@ -85,32 +85,37 @@ pub struct All<A, const N: usize> {
 
 impl<A, const N: usize> All<A, { N }> {
     pub fn new(items: [A; N]) -> Self {
-        unsafe {
-            // An array of MaybeUninit is always valid
-            let mut sequences =
-                MaybeUninit::<[MaybeUninit<Option<A>>; N]>::uninit();
-
-            for i in 0..N {
-                // get a pointer to the item we want to copy
-                let item = items.as_ptr().add(i);
-
-                // an array of MaybeUninit is always valid
-                let sequences = &mut *sequences.as_mut_ptr();
-
-                // copy the item across, transferring ownership to sequences
-                sequences
-                    .as_mut_ptr()
-                    .add(i)
-                    .write(MaybeUninit::new(Some(ptr::read(item))));
-            }
-
-            // The original variable no longer has ownership
-            mem::forget(items);
-
-            All {
-                sequences: mem::transmute_copy(&sequences),
-            }
+        All {
+            sequences: wrap_in_option(items),
         }
+    }
+}
+
+/// Transform a `[T; N]` into a `[Option<T>; N]`, this is essentially a poor
+/// man's `items.into_iter().map(Some).collect()` using static arrays.
+fn wrap_in_option<T, const N: usize>(items: [T; N]) -> [Option<T>; N] {
+    unsafe {
+        let mut sequences =
+            MaybeUninit::<[MaybeUninit<Option<T>>; N]>::uninit();
+
+        for i in 0..N {
+            // get a pointer to the item we want to copy
+            let item = items.as_ptr().add(i);
+
+            // an array of MaybeUninit is always valid
+            let sequences = &mut *sequences.as_mut_ptr();
+
+            // copy the item across, transferring ownership to sequences
+            sequences
+                .as_mut_ptr()
+                .add(i)
+                .write(MaybeUninit::new(Some(ptr::read(item))));
+        }
+
+        // The original variable no longer has ownership
+        mem::forget(items);
+
+        mem::transmute_copy(&sequences)
     }
 }
 
