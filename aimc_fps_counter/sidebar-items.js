@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Clear","Clear the buffer used when [`FpsCounter`] calculates its rolling average."],["Fps",""],["FpsCounter",""]],"trait":[["FpsInputs",""],["FpsSink",""]]});

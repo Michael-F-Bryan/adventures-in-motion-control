@@ -1,0 +1,89 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/uom-0.26.0/src/si/luminous_intensity.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>luminous_intensity.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../uom/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
+<span id="2"> 2</span>
+<span id="3"> 3</span>
+<span id="4"> 4</span>
+<span id="5"> 5</span>
+<span id="6"> 6</span>
+<span id="7"> 7</span>
+<span id="8"> 8</span>
+<span id="9"> 9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="doccomment">//! Luminous intensity (base unit candela, cd).</span>
+
+<span class="macro">quantity</span><span class="macro">!</span> {
+    <span class="doccomment">/// Luminous intensity (base unit candela, cd).</span>
+    <span class="ident">quantity</span>: <span class="ident">LuminousIntensity</span>; <span class="string">&quot;luminous intensity&quot;</span>;
+    <span class="doccomment">/// Dimension of luminous intensity, J (base unit candela, cd).</span>
+    <span class="ident">dimension</span>: <span class="ident">ISQ</span><span class="op">&lt;</span>
+        <span class="ident">Z0</span>,     <span class="comment">// length</span>
+        <span class="ident">Z0</span>,     <span class="comment">// mass</span>
+        <span class="ident">Z0</span>,     <span class="comment">// time</span>
+        <span class="ident">Z0</span>,     <span class="comment">// electric current</span>
+        <span class="ident">Z0</span>,     <span class="comment">// thermodynamic temperature</span>
+        <span class="ident">Z0</span>,     <span class="comment">// amount of substance</span>
+        <span class="ident">P1</span><span class="op">&gt;</span>;    <span class="comment">// luminous intensity</span>
+    <span class="ident">units</span> {
+        @<span class="ident">yottacandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">yotta</span>); <span class="string">&quot;Ycd&quot;</span>, <span class="string">&quot;yottacandela&quot;</span>, <span class="string">&quot;yottacandelas&quot;</span>;
+        @<span class="ident">zettacandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">zetta</span>); <span class="string">&quot;Zcd&quot;</span>, <span class="string">&quot;zettacandela&quot;</span>, <span class="string">&quot;zettacandelas&quot;</span>;
+        @<span class="ident">exacandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">exa</span>); <span class="string">&quot;Ecd&quot;</span>, <span class="string">&quot;exacandela&quot;</span>, <span class="string">&quot;exacandelas&quot;</span>;
+        @<span class="ident">petacandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">peta</span>); <span class="string">&quot;Pcd&quot;</span>, <span class="string">&quot;petacandela&quot;</span>, <span class="string">&quot;petacandelas&quot;</span>;
+        @<span class="ident">teracandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">tera</span>); <span class="string">&quot;Tcd&quot;</span>, <span class="string">&quot;teracandela&quot;</span>, <span class="string">&quot;teracandelas&quot;</span>;
+        @<span class="ident">gigacandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">giga</span>); <span class="string">&quot;Gcd&quot;</span>, <span class="string">&quot;gigacandela&quot;</span>, <span class="string">&quot;gigacandelas&quot;</span>;
+        @<span class="ident">megacandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">mega</span>); <span class="string">&quot;Mcd&quot;</span>, <span class="string">&quot;megacandela&quot;</span>, <span class="string">&quot;megacandelas&quot;</span>;
+        @<span class="ident">kilocandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;kcd&quot;</span>, <span class="string">&quot;kilocandela&quot;</span>, <span class="string">&quot;kilocandelas&quot;</span>;
+        @<span class="ident">hectocandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">hecto</span>); <span class="string">&quot;hcd&quot;</span>, <span class="string">&quot;hectocandela&quot;</span>, <span class="string">&quot;hectocandelas&quot;</span>;
+        @<span class="ident">decacandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">deca</span>); <span class="string">&quot;dacd&quot;</span>, <span class="string">&quot;decacandela&quot;</span>, <span class="string">&quot;decacandelas&quot;</span>;
+        <span class="doccomment">/// The candela is the SI unit of luminous intensity in a given direction. It is defined by</span>
+        <span class="doccomment">/// taking the fixed numerical value of the luminous efficacy of monochromatic radiation of</span>
+        <span class="doccomment">/// frequency 540 × 10¹² Hz, *K*&lt;sub&gt;cd&lt;/sub&gt;, to be 683 when expressed in the unit lm W⁻¹,</span>
+        <span class="doccomment">/// which is equal to cd sr W⁻¹, or cd sr kg⁻¹ m⁻² s³, where the kilogram, meter, and second</span>
+        <span class="doccomment">/// are defined in terms of *h*, *c* and ∆*ν*&lt;sub&gt;Cs&lt;/sub&gt;.</span>
+        @<span class="ident">candela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">none</span>); <span class="string">&quot;cd&quot;</span>, <span class="string">&quot;candela&quot;</span>, <span class="string">&quot;candelas&quot;</span>;
+        @<span class="ident">decicandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">deci</span>); <span class="string">&quot;dcd&quot;</span>, <span class="string">&quot;decicandela&quot;</span>, <span class="string">&quot;decicandelas&quot;</span>;
+        @<span class="ident">centicandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">centi</span>); <span class="string">&quot;ccd&quot;</span>, <span class="string">&quot;centicandela&quot;</span>, <span class="string">&quot;centicandelas&quot;</span>;
+        @<span class="ident">millicandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">milli</span>); <span class="string">&quot;mcd&quot;</span>, <span class="string">&quot;millicandela&quot;</span>, <span class="string">&quot;millicandelas&quot;</span>;
+        @<span class="ident">microcandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">micro</span>); <span class="string">&quot;µcd&quot;</span>, <span class="string">&quot;microcandela&quot;</span>, <span class="string">&quot;microcandelas&quot;</span>;
+        @<span class="ident">nanocandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">nano</span>); <span class="string">&quot;ncd&quot;</span>, <span class="string">&quot;nanocandela&quot;</span>, <span class="string">&quot;nanocandelas&quot;</span>;
+        @<span class="ident">picocandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">pico</span>); <span class="string">&quot;pcd&quot;</span>, <span class="string">&quot;picocandela&quot;</span>, <span class="string">&quot;picocandelas&quot;</span>;
+        @<span class="ident">femtocandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">femto</span>); <span class="string">&quot;fcd&quot;</span>, <span class="string">&quot;femtocandela&quot;</span>, <span class="string">&quot;femtocandelas&quot;</span>;
+        @<span class="ident">attocandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">atto</span>); <span class="string">&quot;acd&quot;</span>, <span class="string">&quot;attocandela&quot;</span>, <span class="string">&quot;attocandelas&quot;</span>;
+        @<span class="ident">zeptocandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">zepto</span>); <span class="string">&quot;zcd&quot;</span>, <span class="string">&quot;zeptocandela&quot;</span>, <span class="string">&quot;zeptocandelas&quot;</span>;
+        @<span class="ident">yoctocandela</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">yocto</span>); <span class="string">&quot;ycd&quot;</span>, <span class="string">&quot;yoctocandela&quot;</span>, <span class="string">&quot;yoctocandelas&quot;</span>;
+    }
+}
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "uom";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

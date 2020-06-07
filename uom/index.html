@@ -1,0 +1,148 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `uom` crate."><meta name="keywords" content="rust, rustlang, rust-lang, uom"><title>uom - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../uom/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><p class='location'>Crate uom</p><div class="sidebar-elems"><a id='all-types' href='all.html'><p>See all uom's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'uom', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/uom/lib.rs.html#1-639' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>uom</a></span></h1><div class='docblock'><p>Units of measurement is a crate that does automatic type-safe zero-cost
+<a href="https://en.wikipedia.org/wiki/Dimensional_analysis">dimensional analysis</a>. You can create your own systems or use the pre-built
+<a href="http://jcgm.bipm.org/vim/en/1.16.html">International System of Units</a> (SI) which is based on the
+<a href="http://jcgm.bipm.org/vim/en/1.6.html">International System of Quantities</a> (ISQ) and includes numerous <a href="http://jcgm.bipm.org/vim/en/1.1.html">quantities</a>
+(length, mass, time, ...) with conversion factors for even more numerous
+<a href="http://jcgm.bipm.org/vim/en/1.9.html">measurement units</a> (meter, kilometer, foot, mile, ...). No more crashing your
+<a href="https://en.wikipedia.org/wiki/Mars_Climate_Orbiter">climate orbiter</a>!</p>
+<h2 id="usage" class="section-header"><a href="#usage">Usage</a></h2>
+<p><code>uom</code> requires <code>rustc</code> 1.31.0 or later. Add this to your <code>Cargo.toml</code>:</p>
+<pre><code class="language-toml">[dependencies]
+uom = &quot;0.26.0&quot;
+</code></pre>
+<p>and this to your crate root:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">uom</span>;</pre></div>
+<p>The simple example below shows how to use quantities and units as well as how <code>uom</code> stops
+invalid operations:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">uom</span>;
+
+<span class="kw">use</span> <span class="ident">uom</span>::<span class="ident">si</span>::<span class="ident">f32</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">uom</span>::<span class="ident">si</span>::<span class="ident">length</span>::<span class="ident">kilometer</span>;
+<span class="kw">use</span> <span class="ident">uom</span>::<span class="ident">si</span>::<span class="ident">time</span>::<span class="ident">second</span>;
+
+<span class="kw">fn</span> <span class="ident">main</span>() {
+    <span class="kw">let</span> <span class="ident">length</span> <span class="op">=</span> <span class="ident">Length</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">kilometer</span><span class="op">&gt;</span>(<span class="number">5.0</span>);
+    <span class="kw">let</span> <span class="ident">time</span> <span class="op">=</span> <span class="ident">Time</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">second</span><span class="op">&gt;</span>(<span class="number">15.0</span>);
+    <span class="kw">let</span> <span class="ident">velocity</span><span class="comment">/*: Velocity*/</span> <span class="op">=</span> <span class="ident">length</span> <span class="op">/</span> <span class="ident">time</span>;
+    <span class="kw">let</span> <span class="ident">_acceleration</span> <span class="op">=</span> <span class="ident">calc_acceleration</span>(<span class="ident">velocity</span>, <span class="ident">time</span>);
+    <span class="comment">//let error = length + time; // error[E0308]: mismatched types</span>
+}
+
+<span class="kw">fn</span> <span class="ident">calc_acceleration</span>(<span class="ident">velocity</span>: <span class="ident">Velocity</span>, <span class="ident">time</span>: <span class="ident">Time</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Acceleration</span> {
+    <span class="ident">velocity</span> <span class="op">/</span> <span class="ident">time</span>
+}</pre></div>
+<p>See examples provided with the source for more advanced usage including how to create <code>Quantity</code>
+type aliases for a different set of base units and how to create an entirely new system of
+quantities.</p>
+<h2 id="features" class="section-header"><a href="#features">Features</a></h2>
+<p><code>uom</code> has multiple <code>Cargo</code> features for controlling available underlying storage types, the
+inclusion of the pre-built <a href="http://jcgm.bipm.org/vim/en/1.16.html">International System of Units</a> (SI), support for
+<a href="https://serde.rs/">Serde</a>, and <code>no_std</code> functionality. The features are described below. <code>f32</code>, <code>f64</code>,
+<code>std</code>, and <code>si</code> are enabled by default. Features can be cherry-picked by using the
+<code>--no-default-features</code> and <code>--features &quot;...&quot;</code> flags when compiling <code>uom</code> or specifying
+features in Cargo.toml:</p>
+<pre><code class="language-toml">[dependencies]
+uom = {
+    version = &quot;0.26.0&quot;,
+    default-features = false,
+    features = [
+        &quot;autoconvert&quot;, # automatic base unit conversion.
+        &quot;usize&quot;, &quot;u8&quot;, &quot;u16&quot;, &quot;u32&quot;, &quot;u64&quot;, &quot;u128&quot;, # Unsigned integer storage types.
+        &quot;isize&quot;, &quot;i8&quot;, &quot;i16&quot;, &quot;i32&quot;, &quot;i64&quot;, &quot;i128&quot;, # Signed integer storage types.
+        &quot;bigint&quot;, &quot;biguint&quot;, # Arbitrary width integer storage types.
+        &quot;rational&quot;, &quot;rational32&quot;, &quot;rational64&quot;, &quot;bigrational&quot;, # Integer ratio storage types.
+        &quot;f32&quot;, &quot;f64&quot;, # Floating point storage types.
+        &quot;si&quot;, &quot;std&quot;, # Built-in SI system and std library support.
+        &quot;try-from&quot;, # `TryFrom` support between `Time` and `Duration`. Requires `rustc` 1.34.0.
+        &quot;use_serde&quot;, # Serde support.
+    ]
+}
+</code></pre>
+<ul>
+<li><code>autoconvert</code> -- Feature to enable automatic conversion between base units in binary
+operators. Disabling the feature only allows for quantities with the same base units to
+directly interact. The feature exists to account for compiler limitations where zero-cost
+code is not generated for non-floating point underlying storage types.</li>
+<li><code>usize</code>, <code>u8</code>, <code>u16</code>, <code>u32</code>, <code>u64</code>, <code>u128</code>, <code>isize</code>, <code>i8</code>, <code>i16</code>, <code>i32</code>, <code>i64</code>, <code>i128</code>,
+<code>bigint</code>, <code>biguint</code>, <code>rational</code>, <code>rational32</code>, <code>rational64</code>, <code>bigrational</code>, <code>f32</code>, <code>f64</code> --
+Features to enable underlying storage types. At least one of these features must be enabled.
+<code>f32</code> and <code>f64</code> are enabled by default. See the <a href="#design">Design</a> section for implications
+of choosing different
+underlying storage types.</li>
+<li><code>si</code> -- Feature to include the pre-built <a href="http://jcgm.bipm.org/vim/en/1.16.html">International System of Units</a> (SI). Enabled by
+default.</li>
+<li><code>std</code> -- Feature to compile with standard library support. Disabling this feature compiles
+<code>uom</code> with <code>no_std</code>. Enabled by default.</li>
+<li><code>try-from</code> -- Feature to enable <code>TryFrom</code> support between <code>Time</code> and <code>Duration</code>. Requires
+<code>rustc</code> 1.34.0.</li>
+<li><code>use_serde</code> -- Feature to enable support for serialization and deserialization of quantities
+with the <a href="https://serde.rs/">Serde</a> crate. Disabled by default.</li>
+</ul>
+<h2 id="design" class="section-header"><a href="#design">Design</a></h2>
+<p>Rather than working with <a href="http://jcgm.bipm.org/vim/en/1.9.html">measurement units</a> (meter,
+kilometer, foot, mile, ...) <code>uom</code> works with <a href="http://jcgm.bipm.org/vim/en/1.1.html">quantities</a>
+(length, mass, time, ...). This simplifies usage because units are only involved at interface
+boundaries: the rest of your code only needs to be concerned about the quantities involved.
+This also makes operations on quantities (+, -, *, /, ...) have zero runtime cost over using
+the raw storage type (e.g. <code>f32</code>).</p>
+<p><code>uom</code> normalizes values to the <a href="http://jcgm.bipm.org/vim/en/1.10.html">base unit</a> for the
+quantity. Alternative base units can be used by executing the macro defined for the system of
+quantities (<code>ISQ!</code> for the SI). <code>uom</code> supports <code>usize</code>, <code>u8</code>, <code>u16</code>, <code>u32</code>, <code>u64</code>, <code>u128</code>,
+<code>isize</code>, <code>i8</code>, <code>i16</code>, <code>i32</code>, <code>i64</code>, <code>i128</code>, <code>bigint</code>, <code>biguint</code>, <code>rational</code>, <code>rational32</code>,
+<code>rational64</code>, <code>bigrational</code>, <code>f32</code>, and <code>f64</code> as the underlying storage type.</p>
+<p>A consequence of normalizing values to the base unit is that some values may not be able to be
+represented or can't be precisely represented for floating point and rational underlying
+storage types. For example if the base unit of <code>length</code> is <code>meter</code> and the underlying storage
+type is <code>i32</code> then values like <code>1 centimeter</code> or <code>1.1 meter</code> cannot be represented. <code>1 centimeter</code> is normalized to <code>0.01 meter</code> which can't be stored in an <code>i32</code>. <code>uom</code> only allows
+units to be used safely. Users of this library will still need to be aware of implementation
+details of the underlying storage type including limits and precision.</p>
+<h2 id="contributing" class="section-header"><a href="#contributing">Contributing</a></h2>
+<p>Contributions are welcome from everyone. Submit a pull request, an issue, or just add comments
+to an existing item. The <a href="http://www.bipm.org/en/about-us/">International Bureau of Weights and Measures</a> is an
+international standards organization that publishes the <a href="http://www.bipm.org/en/publications/si-brochure/">SI Brochure</a>. This document
+defines the <a href="http://jcgm.bipm.org/vim/en/1.16.html">SI</a> and can be used as a comprehensive reference for changes to <code>uom</code>. Conversion
+factors for non-SI units can be found in NIST <a href="https://www.nist.gov/pml/nist-guide-si-appendix-b9-factors-units-listed-kind-quantity-or-field-science">Special Publication 811</a>.</p>
+<p>Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in
+the work by you, as defined in the Apache-2.0 license, shall be dual licensed as below, without
+any additional terms or conditions.</p>
+<h3 id="license" class="section-header"><a href="#license">License</a></h3>
+<p>Licensed under either of</p>
+<ul>
+<li>Apache License, Version 2.0, (<a href="LICENSE-APACHE">LICENSE-APACHE</a> or
+<a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>)</li>
+<li>MIT license (<a href="LICENSE-MIT">LICENSE-MIT</a> or <a href="http://opensource.org/licenses/MIT">http://opensource.org/licenses/MIT</a>)</li>
+</ul>
+<p>at your option.</p>
+</div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table><tr class='module-item'><td><a class="mod" href="fmt/index.html" title='uom::fmt mod'>fmt</a></td><td class='docblock-short'><p>Utilities for formatting and printing quantities.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="marker/index.html" title='uom::marker mod'>marker</a></td><td class='docblock-short'><p>Primitive traits and types representing basic properties of types.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="si/index.html" title='uom::si mod'>si</a></td><td class='docblock-short'><p><a href="http://jcgm.bipm.org/vim/en/1.16.html">International System of Units</a> (SI) and <a href="http://jcgm.bipm.org/vim/en/1.6.html">International System of Quantities</a> (ISQ)
+implementations.</p>
+</td></tr><tr class='module-item'><td><a class="mod" href="str/index.html" title='uom::str mod'>str</a></td><td class='docblock-short'><p>Unicode string slice manipulation for quantities.</p>
+</td></tr></table><h2 id='macros' class='section-header'><a href="#macros">Macros</a></h2>
+<table><tr class='module-item'><td><a class="macro" href="macro.ISQ.html" title='uom::ISQ macro'>ISQ</a></td><td class='docblock-short'><p>Macro to implement <a href="si/struct.Quantity.html"><code>quantity</code></a> type aliases for a specific
+<a href="http://jcgm.bipm.org/vim/en/1.13.html">system of units</a> and value storage type.</p>
+</td></tr><tr class='module-item'><td><a class="macro" href="macro.impl_from.html" title='uom::impl_from macro'>impl_from</a></td><td class='docblock-short'><p><code>impl_from</code> generates generic inter-Kind implementations of <code>From</code>.</p>
+</td></tr><tr class='module-item'><td><a class="macro" href="macro.prefix.html" title='uom::prefix macro'>prefix</a></td><td class='docblock-short'><p>Macro to implement the <a href="http://jcgm.bipm.org/vim/en/1.16.html">SI</a> prefixes for <a href="http://jcgm.bipm.org/vim/en/1.17.html">multiples of units</a>,
+<a href="http://jcgm.bipm.org/vim/en/1.18.html">submultiples of units</a> and <a href="https://www.iec.ch/si/binary.htm">binary multiples of units</a>.</p>
+</td></tr><tr class='module-item'><td><a class="macro" href="macro.quantity.html" title='uom::quantity macro'>quantity</a></td><td class='docblock-short'><p>Macro to implement a <a href="http://jcgm.bipm.org/vim/en/1.1.html">quantity</a> and associated <a href="http://jcgm.bipm.org/vim/en/1.9.html">measurement units</a>. Note
+that this macro must be executed in direct submodules of the module where the
+<a href="macro.system.html"><code>system!</code></a> macro was executed. <code>@...</code> match arms are considered private.</p>
+</td></tr><tr class='module-item'><td><a class="macro" href="macro.storage_types.html" title='uom::storage_types macro'>storage_types</a></td><td class='docblock-short'><p>Macro to duplicate code on a per-storage type basis. The given code is duplicated in new
+modules named for each storage type. A type alias, <code>V</code>, is generated that code can use for the
+type. <code>@...</code> match arms are considered private.</p>
+</td></tr><tr class='module-item'><td><a class="macro" href="macro.system.html" title='uom::system macro'>system</a></td><td class='docblock-short'><p>Macro to implement a <a href="http://jcgm.bipm.org/vim/en/1.3.html">system of quantities</a>. <code>@...</code> match
+arms are considered private.</p>
+</td></tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table><tr class='module-item'><td><a class="enum" href="enum.ConstantOp.html" title='uom::ConstantOp enum'>ConstantOp</a></td><td class='docblock-short'><p>Operations performed on the constant portion of the <a href="https://jcgm.bipm.org/vim/en/1.24.html">conversion factor</a>. Used to help
+guide optimizations when floating point underlying storage types are used.</p>
+</td></tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table><tr class='module-item'><td><a class="trait" href="trait.Conversion.html" title='uom::Conversion trait'>Conversion</a></td><td class='docblock-short'><p>Trait to identify <a href="http://jcgm.bipm.org/vim/en/1.13.html">units</a> which have a <a href="https://jcgm.bipm.org/vim/en/1.24.html">conversion factor</a>.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.ConversionFactor.html" title='uom::ConversionFactor trait'>ConversionFactor</a></td><td class='docblock-short'><p>Trait representing a <a href="https://jcgm.bipm.org/vim/en/1.24.html">conversion factor</a>.</p>
+</td></tr><tr class='module-item'><td><a class="trait" href="trait.Kind.html" title='uom::Kind trait'>Kind</a></td><td class='docblock-short'><p>Default <a href="https://jcgm.bipm.org/vim/en/1.2.html">kind</a> of quantities to allow addition, subtraction, multiplication, division,
+remainder, negation, and saturating addition/subtraction.</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "uom";</script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/anpp-2.0.0/src/utils.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>utils.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../anpp/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
+<span id="2"> 2</span>
+<span id="3"> 3</span>
+<span id="4"> 4</span>
+<span id="5"> 5</span>
+<span id="6"> 6</span>
+<span id="7"> 7</span>
+<span id="8"> 8</span>
+<span id="9"> 9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="ident">core</span>::<span class="ident">num</span>::<span class="ident">Wrapping</span>;
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">calculate_crc16</span>(<span class="ident">data</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u16</span> {
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">crc</span>: <span class="ident">u16</span> <span class="op">=</span> <span class="number">0xffff</span>;
+
+    <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">byte</span> <span class="kw">in</span> <span class="ident">data</span> {
+        <span class="kw">let</span> <span class="ident">ix</span> <span class="op">=</span> (<span class="ident">crc</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">8</span>) <span class="op">^</span> <span class="ident">u16</span>::<span class="ident">from</span>(<span class="ident">byte</span>);
+        <span class="ident">crc</span> <span class="op">=</span> (<span class="ident">crc</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">8</span>) <span class="op">^</span> <span class="ident">CRC16_TABLE</span>[<span class="ident">ix</span> <span class="kw">as</span> <span class="ident">usize</span>];
+    }
+
+    <span class="ident">crc</span>
+}
+
+<span class="doccomment">/// A simple checksum for validating a packet&#39;s header.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">calculate_header_lrc</span>(<span class="ident">header</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u8</span> {
+    <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">header</span>.<span class="ident">len</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="number">4</span>);
+
+    <span class="comment">// All these Wrappings kinda makes me sad...</span>
+    <span class="kw">let</span> <span class="ident">header_sum</span> <span class="op">=</span> <span class="ident">Wrapping</span>(<span class="ident">header</span>[<span class="number">0</span>])
+        <span class="op">+</span> <span class="ident">Wrapping</span>(<span class="ident">header</span>[<span class="number">1</span>])
+        <span class="op">+</span> <span class="ident">Wrapping</span>(<span class="ident">header</span>[<span class="number">2</span>])
+        <span class="op">+</span> <span class="ident">Wrapping</span>(<span class="ident">header</span>[<span class="number">3</span>]);
+    <span class="kw">let</span> <span class="ident">lrc</span> <span class="op">=</span> (<span class="ident">header_sum</span> <span class="op">^</span> <span class="ident">Wrapping</span>(<span class="number">0xFF</span>)) <span class="op">+</span> <span class="ident">Wrapping</span>(<span class="number">1</span>);
+
+    <span class="ident">lrc</span>.<span class="number">0</span>
+}
+
+<span class="kw">static</span> <span class="ident">CRC16_TABLE</span>: <span class="kw-2">&amp;</span>[<span class="ident">u16</span>; <span class="number">256</span>] <span class="op">=</span> <span class="kw-2">&amp;</span>[
+    <span class="number">0x0000</span>, <span class="number">0x1021</span>, <span class="number">0x2042</span>, <span class="number">0x3063</span>, <span class="number">0x4084</span>, <span class="number">0x50a5</span>, <span class="number">0x60c6</span>, <span class="number">0x70e7</span>, <span class="number">0x8108</span>,
+    <span class="number">0x9129</span>, <span class="number">0xa14a</span>, <span class="number">0xb16b</span>, <span class="number">0xc18c</span>, <span class="number">0xd1ad</span>, <span class="number">0xe1ce</span>, <span class="number">0xf1ef</span>, <span class="number">0x1231</span>, <span class="number">0x0210</span>,
+    <span class="number">0x3273</span>, <span class="number">0x2252</span>, <span class="number">0x52b5</span>, <span class="number">0x4294</span>, <span class="number">0x72f7</span>, <span class="number">0x62d6</span>, <span class="number">0x9339</span>, <span class="number">0x8318</span>, <span class="number">0xb37b</span>,
+    <span class="number">0xa35a</span>, <span class="number">0xd3bd</span>, <span class="number">0xc39c</span>, <span class="number">0xf3ff</span>, <span class="number">0xe3de</span>, <span class="number">0x2462</span>, <span class="number">0x3443</span>, <span class="number">0x0420</span>, <span class="number">0x1401</span>,
+    <span class="number">0x64e6</span>, <span class="number">0x74c7</span>, <span class="number">0x44a4</span>, <span class="number">0x5485</span>, <span class="number">0xa56a</span>, <span class="number">0xb54b</span>, <span class="number">0x8528</span>, <span class="number">0x9509</span>, <span class="number">0xe5ee</span>,
+    <span class="number">0xf5cf</span>, <span class="number">0xc5ac</span>, <span class="number">0xd58d</span>, <span class="number">0x3653</span>, <span class="number">0x2672</span>, <span class="number">0x1611</span>, <span class="number">0x0630</span>, <span class="number">0x76d7</span>, <span class="number">0x66f6</span>,
+    <span class="number">0x5695</span>, <span class="number">0x46b4</span>, <span class="number">0xb75b</span>, <span class="number">0xa77a</span>, <span class="number">0x9719</span>, <span class="number">0x8738</span>, <span class="number">0xf7df</span>, <span class="number">0xe7fe</span>, <span class="number">0xd79d</span>,
+    <span class="number">0xc7bc</span>, <span class="number">0x48c4</span>, <span class="number">0x58e5</span>, <span class="number">0x6886</span>, <span class="number">0x78a7</span>, <span class="number">0x0840</span>, <span class="number">0x1861</span>, <span class="number">0x2802</span>, <span class="number">0x3823</span>,
+    <span class="number">0xc9cc</span>, <span class="number">0xd9ed</span>, <span class="number">0xe98e</span>, <span class="number">0xf9af</span>, <span class="number">0x8948</span>, <span class="number">0x9969</span>, <span class="number">0xa90a</span>, <span class="number">0xb92b</span>, <span class="number">0x5af5</span>,
+    <span class="number">0x4ad4</span>, <span class="number">0x7ab7</span>, <span class="number">0x6a96</span>, <span class="number">0x1a71</span>, <span class="number">0x0a50</span>, <span class="number">0x3a33</span>, <span class="number">0x2a12</span>, <span class="number">0xdbfd</span>, <span class="number">0xcbdc</span>,
+    <span class="number">0xfbbf</span>, <span class="number">0xeb9e</span>, <span class="number">0x9b79</span>, <span class="number">0x8b58</span>, <span class="number">0xbb3b</span>, <span class="number">0xab1a</span>, <span class="number">0x6ca6</span>, <span class="number">0x7c87</span>, <span class="number">0x4ce4</span>,
+    <span class="number">0x5cc5</span>, <span class="number">0x2c22</span>, <span class="number">0x3c03</span>, <span class="number">0x0c60</span>, <span class="number">0x1c41</span>, <span class="number">0xedae</span>, <span class="number">0xfd8f</span>, <span class="number">0xcdec</span>, <span class="number">0xddcd</span>,
+    <span class="number">0xad2a</span>, <span class="number">0xbd0b</span>, <span class="number">0x8d68</span>, <span class="number">0x9d49</span>, <span class="number">0x7e97</span>, <span class="number">0x6eb6</span>, <span class="number">0x5ed5</span>, <span class="number">0x4ef4</span>, <span class="number">0x3e13</span>,
+    <span class="number">0x2e32</span>, <span class="number">0x1e51</span>, <span class="number">0x0e70</span>, <span class="number">0xff9f</span>, <span class="number">0xefbe</span>, <span class="number">0xdfdd</span>, <span class="number">0xcffc</span>, <span class="number">0xbf1b</span>, <span class="number">0xaf3a</span>,
+    <span class="number">0x9f59</span>, <span class="number">0x8f78</span>, <span class="number">0x9188</span>, <span class="number">0x81a9</span>, <span class="number">0xb1ca</span>, <span class="number">0xa1eb</span>, <span class="number">0xd10c</span>, <span class="number">0xc12d</span>, <span class="number">0xf14e</span>,
+    <span class="number">0xe16f</span>, <span class="number">0x1080</span>, <span class="number">0x00a1</span>, <span class="number">0x30c2</span>, <span class="number">0x20e3</span>, <span class="number">0x5004</span>, <span class="number">0x4025</span>, <span class="number">0x7046</span>, <span class="number">0x6067</span>,
+    <span class="number">0x83b9</span>, <span class="number">0x9398</span>, <span class="number">0xa3fb</span>, <span class="number">0xb3da</span>, <span class="number">0xc33d</span>, <span class="number">0xd31c</span>, <span class="number">0xe37f</span>, <span class="number">0xf35e</span>, <span class="number">0x02b1</span>,
+    <span class="number">0x1290</span>, <span class="number">0x22f3</span>, <span class="number">0x32d2</span>, <span class="number">0x4235</span>, <span class="number">0x5214</span>, <span class="number">0x6277</span>, <span class="number">0x7256</span>, <span class="number">0xb5ea</span>, <span class="number">0xa5cb</span>,
+    <span class="number">0x95a8</span>, <span class="number">0x8589</span>, <span class="number">0xf56e</span>, <span class="number">0xe54f</span>, <span class="number">0xd52c</span>, <span class="number">0xc50d</span>, <span class="number">0x34e2</span>, <span class="number">0x24c3</span>, <span class="number">0x14a0</span>,
+    <span class="number">0x0481</span>, <span class="number">0x7466</span>, <span class="number">0x6447</span>, <span class="number">0x5424</span>, <span class="number">0x4405</span>, <span class="number">0xa7db</span>, <span class="number">0xb7fa</span>, <span class="number">0x8799</span>, <span class="number">0x97b8</span>,
+    <span class="number">0xe75f</span>, <span class="number">0xf77e</span>, <span class="number">0xc71d</span>, <span class="number">0xd73c</span>, <span class="number">0x26d3</span>, <span class="number">0x36f2</span>, <span class="number">0x0691</span>, <span class="number">0x16b0</span>, <span class="number">0x6657</span>,
+    <span class="number">0x7676</span>, <span class="number">0x4615</span>, <span class="number">0x5634</span>, <span class="number">0xd94c</span>, <span class="number">0xc96d</span>, <span class="number">0xf90e</span>, <span class="number">0xe92f</span>, <span class="number">0x99c8</span>, <span class="number">0x89e9</span>,
+    <span class="number">0xb98a</span>, <span class="number">0xa9ab</span>, <span class="number">0x5844</span>, <span class="number">0x4865</span>, <span class="number">0x7806</span>, <span class="number">0x6827</span>, <span class="number">0x18c0</span>, <span class="number">0x08e1</span>, <span class="number">0x3882</span>,
+    <span class="number">0x28a3</span>, <span class="number">0xcb7d</span>, <span class="number">0xdb5c</span>, <span class="number">0xeb3f</span>, <span class="number">0xfb1e</span>, <span class="number">0x8bf9</span>, <span class="number">0x9bd8</span>, <span class="number">0xabbb</span>, <span class="number">0xbb9a</span>,
+    <span class="number">0x4a75</span>, <span class="number">0x5a54</span>, <span class="number">0x6a37</span>, <span class="number">0x7a16</span>, <span class="number">0x0af1</span>, <span class="number">0x1ad0</span>, <span class="number">0x2ab3</span>, <span class="number">0x3a92</span>, <span class="number">0xfd2e</span>,
+    <span class="number">0xed0f</span>, <span class="number">0xdd6c</span>, <span class="number">0xcd4d</span>, <span class="number">0xbdaa</span>, <span class="number">0xad8b</span>, <span class="number">0x9de8</span>, <span class="number">0x8dc9</span>, <span class="number">0x7c26</span>, <span class="number">0x6c07</span>,
+    <span class="number">0x5c64</span>, <span class="number">0x4c45</span>, <span class="number">0x3ca2</span>, <span class="number">0x2c83</span>, <span class="number">0x1ce0</span>, <span class="number">0x0cc1</span>, <span class="number">0xef1f</span>, <span class="number">0xff3e</span>, <span class="number">0xcf5d</span>,
+    <span class="number">0xdf7c</span>, <span class="number">0xaf9b</span>, <span class="number">0xbfba</span>, <span class="number">0x8fd9</span>, <span class="number">0x9ff8</span>, <span class="number">0x6e17</span>, <span class="number">0x7e36</span>, <span class="number">0x4e55</span>, <span class="number">0x5e74</span>,
+    <span class="number">0x2e93</span>, <span class="number">0x3eb2</span>, <span class="number">0x0ed1</span>, <span class="number">0x1ef0</span>,
+];
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "anpp";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

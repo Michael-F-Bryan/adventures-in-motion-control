@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["ControlMode",""],["FaultKind",""]],"mod":[["movements",""],["planning",""]],"struct":[["Fault",""],["GcodeProgram","A message containing part of a g-code program."],["Home","The Go To Home [`AutomationSequence`]."],["Motion",""],["MotionParameters",""],["MoveAxisHome",""],["StartHomingSequence",""]]});

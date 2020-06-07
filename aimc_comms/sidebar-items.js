@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["CommsError",""]],"struct":[["Communications",""],["Outputs",""]],"trait":[["MessageHandler",""],["Rx","The receiving end of a Serial Connection."],["Tx","The transmitting end of a Serial Connection."]]});

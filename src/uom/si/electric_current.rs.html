@@ -1,0 +1,95 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/uom-0.26.0/src/si/electric_current.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>electric_current.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../uom/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
+<span id="2"> 2</span>
+<span id="3"> 3</span>
+<span id="4"> 4</span>
+<span id="5"> 5</span>
+<span id="6"> 6</span>
+<span id="7"> 7</span>
+<span id="8"> 8</span>
+<span id="9"> 9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="doccomment">//! Electric current (base unit ampere, A).</span>
+
+<span class="macro">quantity</span><span class="macro">!</span> {
+    <span class="doccomment">/// Electric current (base unit ampere, A).</span>
+    <span class="ident">quantity</span>: <span class="ident">ElectricCurrent</span>; <span class="string">&quot;electric current&quot;</span>;
+    <span class="doccomment">/// Dimension of electric current, I (base unit ampere, A).</span>
+    <span class="ident">dimension</span>: <span class="ident">ISQ</span><span class="op">&lt;</span>
+        <span class="ident">Z0</span>,     <span class="comment">// length</span>
+        <span class="ident">Z0</span>,     <span class="comment">// mass</span>
+        <span class="ident">Z0</span>,     <span class="comment">// time</span>
+        <span class="ident">P1</span>,     <span class="comment">// electric current</span>
+        <span class="ident">Z0</span>,     <span class="comment">// thermodynamic temperature</span>
+        <span class="ident">Z0</span>,     <span class="comment">// amount of substance</span>
+        <span class="ident">Z0</span><span class="op">&gt;</span>;    <span class="comment">// luminous intensity</span>
+    <span class="ident">units</span> {
+        @<span class="ident">yottaampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">yotta</span>); <span class="string">&quot;YA&quot;</span>, <span class="string">&quot;yottaampere&quot;</span>, <span class="string">&quot;yottaamperes&quot;</span>;
+        @<span class="ident">zettaampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">zetta</span>); <span class="string">&quot;ZA&quot;</span>, <span class="string">&quot;zettaampere&quot;</span>, <span class="string">&quot;zettaamperes&quot;</span>;
+        @<span class="ident">exaampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">exa</span>); <span class="string">&quot;EA&quot;</span>, <span class="string">&quot;exaampere&quot;</span>, <span class="string">&quot;exaamperes&quot;</span>;
+        @<span class="ident">petaampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">peta</span>); <span class="string">&quot;PA&quot;</span>, <span class="string">&quot;petaampere&quot;</span>, <span class="string">&quot;petaamperes&quot;</span>;
+        @<span class="ident">teraampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">tera</span>); <span class="string">&quot;TA&quot;</span>, <span class="string">&quot;teraampere&quot;</span>, <span class="string">&quot;teraamperes&quot;</span>;
+        @<span class="ident">gigaampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">giga</span>); <span class="string">&quot;GA&quot;</span>, <span class="string">&quot;gigaampere&quot;</span>, <span class="string">&quot;gigaamperes&quot;</span>;
+        @<span class="ident">megaampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">mega</span>); <span class="string">&quot;MA&quot;</span>, <span class="string">&quot;megaampere&quot;</span>, <span class="string">&quot;megaamperes&quot;</span>;
+        @<span class="ident">kiloampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;kA&quot;</span>, <span class="string">&quot;kiloampere&quot;</span>, <span class="string">&quot;kiloamperes&quot;</span>;
+        @<span class="ident">hectoampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">hecto</span>); <span class="string">&quot;hA&quot;</span>, <span class="string">&quot;hectoampere&quot;</span>, <span class="string">&quot;hectoamperes&quot;</span>;
+        @<span class="ident">decaampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">deca</span>); <span class="string">&quot;daA&quot;</span>, <span class="string">&quot;decaampere&quot;</span>, <span class="string">&quot;decaamperes&quot;</span>;
+        <span class="doccomment">/// The ampere is the SI unit of electric current. It is defined by taking the fixed</span>
+        <span class="doccomment">/// numerical value of the elementary charge *e* to be 1.602 176 634 × 10⁻¹⁹ when expressed</span>
+        <span class="doccomment">/// in the unit C, which is equal to A s, where the second is defined in terms of</span>
+        <span class="doccomment">/// ∆*ν*&lt;sub&gt;Cs&lt;/sub&gt;.</span>
+        @<span class="ident">ampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">none</span>); <span class="string">&quot;A&quot;</span>, <span class="string">&quot;ampere&quot;</span>, <span class="string">&quot;amperes&quot;</span>;
+        @<span class="ident">deciampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">deci</span>); <span class="string">&quot;dA&quot;</span>, <span class="string">&quot;deciampere&quot;</span>, <span class="string">&quot;deciamperes&quot;</span>;
+        @<span class="ident">centiampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">centi</span>); <span class="string">&quot;cA&quot;</span>, <span class="string">&quot;centiampere&quot;</span>, <span class="string">&quot;centiamperes&quot;</span>;
+        @<span class="ident">milliampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">milli</span>); <span class="string">&quot;mA&quot;</span>, <span class="string">&quot;millampere&quot;</span>, <span class="string">&quot;millamperes&quot;</span>;
+        @<span class="ident">microampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">micro</span>); <span class="string">&quot;µA&quot;</span>, <span class="string">&quot;microampere&quot;</span>, <span class="string">&quot;microamperes&quot;</span>;
+        @<span class="ident">nanoampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">nano</span>); <span class="string">&quot;nA&quot;</span>, <span class="string">&quot;nanoampere&quot;</span>, <span class="string">&quot;nanoamperes&quot;</span>;
+        @<span class="ident">picoampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">pico</span>); <span class="string">&quot;pA&quot;</span>, <span class="string">&quot;picoampere&quot;</span>, <span class="string">&quot;picoamperes&quot;</span>;
+        @<span class="ident">femtoampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">femto</span>); <span class="string">&quot;fA&quot;</span>, <span class="string">&quot;femtoampere&quot;</span>, <span class="string">&quot;femtoamperes&quot;</span>;
+        @<span class="ident">attoampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">atto</span>); <span class="string">&quot;aA&quot;</span>, <span class="string">&quot;attoampere&quot;</span>, <span class="string">&quot;attoamperes&quot;</span>;
+        @<span class="ident">zeptoampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">zepto</span>); <span class="string">&quot;zA&quot;</span>, <span class="string">&quot;zeptoampere&quot;</span>, <span class="string">&quot;zeptoamperes&quot;</span>;
+        @<span class="ident">yoctoampere</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">yocto</span>); <span class="string">&quot;yA&quot;</span>, <span class="string">&quot;yoctoampere&quot;</span>, <span class="string">&quot;yoctoamperes&quot;</span>;
+
+        @<span class="ident">abampere</span>: <span class="number">1.0_E1</span>; <span class="string">&quot;abA&quot;</span>, <span class="string">&quot;abampere&quot;</span>, <span class="string">&quot;abamperes&quot;</span>;
+        @<span class="ident">gilbert</span>: <span class="number">7.957_747_E-1</span>; <span class="string">&quot;Gi&quot;</span>, <span class="string">&quot;gilbert&quot;</span>, <span class="string">&quot;gilberts&quot;</span>;
+        @<span class="ident">statampere</span>: <span class="number">3.335_641_E-10</span>; <span class="string">&quot;statA&quot;</span>, <span class="string">&quot;statampere&quot;</span>, <span class="string">&quot;statamperes&quot;</span>;
+    }
+}
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "uom";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["errors","All error types used in this crate."]],"struct":[["Decoder","Decoder for the Advanced Navigation Packet Protocol."],["Packet","An arbitrary chunk of bytes with a user-defined ID."]]});

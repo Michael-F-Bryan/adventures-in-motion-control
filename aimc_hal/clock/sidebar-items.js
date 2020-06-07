@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["DummyClock","A [`Clock`] which always returns a pre-defined [`Duration`]."]],"trait":[["Clock","A source of time."],["HasClock","Something which has a clock."]]});

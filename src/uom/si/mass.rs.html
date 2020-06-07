@@ -1,0 +1,117 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/uom-0.26.0/src/si/mass.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mass.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../uom/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
+<span id="2"> 2</span>
+<span id="3"> 3</span>
+<span id="4"> 4</span>
+<span id="5"> 5</span>
+<span id="6"> 6</span>
+<span id="7"> 7</span>
+<span id="8"> 8</span>
+<span id="9"> 9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="doccomment">//! Mass (base unit kilogram, kg).</span>
+
+<span class="macro">quantity</span><span class="macro">!</span> {
+    <span class="doccomment">/// Mass (base unit kilogram, kg).</span>
+    <span class="ident">quantity</span>: <span class="ident">Mass</span>; <span class="string">&quot;mass&quot;</span>;
+    <span class="doccomment">/// Mass dimension, M (base unit kilogram, kg).</span>
+    <span class="ident">dimension</span>: <span class="ident">ISQ</span><span class="op">&lt;</span>
+        <span class="ident">Z0</span>,     <span class="comment">// length</span>
+        <span class="ident">P1</span>,     <span class="comment">// mass</span>
+        <span class="ident">Z0</span>,     <span class="comment">// time</span>
+        <span class="ident">Z0</span>,     <span class="comment">// electric current</span>
+        <span class="ident">Z0</span>,     <span class="comment">// thermodynamic temperature</span>
+        <span class="ident">Z0</span>,     <span class="comment">// amount of substance</span>
+        <span class="ident">Z0</span><span class="op">&gt;</span>;    <span class="comment">// luminous intensity</span>
+    <span class="ident">units</span> {
+        @<span class="ident">yottagram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">yotta</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;Yg&quot;</span>, <span class="string">&quot;yottagram&quot;</span>, <span class="string">&quot;yottagrams&quot;</span>;
+        @<span class="ident">zettagram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">zetta</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;Zg&quot;</span>, <span class="string">&quot;zettagram&quot;</span>, <span class="string">&quot;zettagrams&quot;</span>;
+        @<span class="ident">exagram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">exa</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;Eg&quot;</span>, <span class="string">&quot;exagram&quot;</span>, <span class="string">&quot;exagrams&quot;</span>;
+        @<span class="ident">petagram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">peta</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;Pg&quot;</span>, <span class="string">&quot;petagram&quot;</span>, <span class="string">&quot;petagrams&quot;</span>;
+        @<span class="ident">teragram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">tera</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;Tg&quot;</span>, <span class="string">&quot;teragram&quot;</span>, <span class="string">&quot;teragrams&quot;</span>;
+        @<span class="ident">gigagram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">giga</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;Gg&quot;</span>, <span class="string">&quot;gigagram&quot;</span>, <span class="string">&quot;gigagrams&quot;</span>;
+        @<span class="ident">megagram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">mega</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;Mg&quot;</span>, <span class="string">&quot;megagram&quot;</span>, <span class="string">&quot;megagrams&quot;</span>;
+        <span class="doccomment">/// The kilogram is the SI unit of mass. It is defined by taking the fixed numerical value</span>
+        <span class="doccomment">/// of the Planck constant *h* to be 6.626 070 15 × 10⁻³⁴ when expressed in the unit J s,</span>
+        <span class="doccomment">/// which is equal to kg m² s⁻¹, where the meter and the second are defined in terms of *c*</span>
+        <span class="doccomment">/// and ∆*ν*&lt;sub&gt;Cs&lt;/sub&gt;.</span>
+        @<span class="ident">kilogram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;kg&quot;</span>, <span class="string">&quot;kilogram&quot;</span>, <span class="string">&quot;kilograms&quot;</span>;
+        @<span class="ident">hectogram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">hecto</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;hg&quot;</span>, <span class="string">&quot;hectogram&quot;</span>, <span class="string">&quot;hectograms&quot;</span>;
+        @<span class="ident">decagram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">deca</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;dag&quot;</span>, <span class="string">&quot;decagram&quot;</span>, <span class="string">&quot;decagrams&quot;</span>;
+        @<span class="ident">gram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">none</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;g&quot;</span>, <span class="string">&quot;gram&quot;</span>, <span class="string">&quot;grams&quot;</span>;
+        @<span class="ident">decigram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">deci</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;dg&quot;</span>, <span class="string">&quot;decigram&quot;</span>, <span class="string">&quot;decigrams&quot;</span>;
+        @<span class="ident">centigram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">centi</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;cg&quot;</span>, <span class="string">&quot;centigram&quot;</span>, <span class="string">&quot;centigrams&quot;</span>;
+        @<span class="ident">milligram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">milli</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;mg&quot;</span>, <span class="string">&quot;milligram&quot;</span>, <span class="string">&quot;milligrams&quot;</span>;
+        @<span class="ident">microgram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">micro</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;µg&quot;</span>, <span class="string">&quot;microgram&quot;</span>, <span class="string">&quot;micrograms&quot;</span>;
+        @<span class="ident">nanogram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">nano</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;ng&quot;</span>, <span class="string">&quot;nanogram&quot;</span>, <span class="string">&quot;nanograms&quot;</span>;
+        @<span class="ident">picogram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">pico</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;pg&quot;</span>, <span class="string">&quot;picogram&quot;</span>, <span class="string">&quot;picograms&quot;</span>;
+        @<span class="ident">femtogram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">femto</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;fg&quot;</span>, <span class="string">&quot;femtogram&quot;</span>, <span class="string">&quot;femtograms&quot;</span>;
+        @<span class="ident">attogram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">atto</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;ag&quot;</span>, <span class="string">&quot;attogram&quot;</span>, <span class="string">&quot;attograms&quot;</span>;
+        @<span class="ident">zeptogram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">zepto</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;zg&quot;</span>, <span class="string">&quot;zeptogram&quot;</span>, <span class="string">&quot;zeptograms&quot;</span>;
+        @<span class="ident">yoctogram</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">yocto</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;yg&quot;</span>, <span class="string">&quot;yoctogram&quot;</span>, <span class="string">&quot;yoctograms&quot;</span>;
+
+        @<span class="ident">carat</span>: <span class="number">2.0_E-4</span>; <span class="string">&quot;ct&quot;</span>, <span class="string">&quot;carat&quot;</span>, <span class="string">&quot;carats&quot;</span>;
+        @<span class="ident">grain</span>: <span class="number">6.479_891_E-5</span>; <span class="string">&quot;gr&quot;</span>, <span class="string">&quot;grain&quot;</span>, <span class="string">&quot;grains&quot;</span>;
+        @<span class="ident">hundredweight_long</span>: <span class="number">5.080_235_E1</span>; <span class="string">&quot;cwt long&quot;</span>, <span class="string">&quot;hundredweight (long)&quot;</span>, <span class="string">&quot;hundredweight (long)&quot;</span>;
+        @<span class="ident">hundredweight_short</span>: <span class="number">4.535_924_E1</span>; <span class="string">&quot;cwt short&quot;</span>, <span class="string">&quot;hundredweight (short)&quot;</span>, <span class="string">&quot;hundredweight (short)&quot;</span>;
+        @<span class="ident">ounce</span>: <span class="number">2.834_952_E-2</span>; <span class="string">&quot;oz&quot;</span>, <span class="string">&quot;ounce&quot;</span>, <span class="string">&quot;ounces&quot;</span>;
+        @<span class="ident">ounce_troy</span>: <span class="number">3.110_348_E-2</span>; <span class="string">&quot;oz t&quot;</span>, <span class="string">&quot;troy ounce&quot;</span>, <span class="string">&quot;troy ounces&quot;</span>;
+        @<span class="ident">pennyweight</span>: <span class="number">1.555_174_E-3</span>; <span class="string">&quot;dwt&quot;</span>, <span class="string">&quot;pennyweight&quot;</span>, <span class="string">&quot;pennyweight&quot;</span>;
+        @<span class="ident">pound</span>: <span class="number">4.535_924_E-1</span>; <span class="string">&quot;lb&quot;</span>, <span class="string">&quot;pound&quot;</span>, <span class="string">&quot;pounds&quot;</span>;
+        @<span class="ident">pound_troy</span>: <span class="number">3.732_417_E-1</span>; <span class="string">&quot;lb t&quot;</span>, <span class="string">&quot;troy pound&quot;</span>, <span class="string">&quot;troy pounds&quot;</span>;
+        @<span class="ident">slug</span>: <span class="number">1.459_390_E1</span>; <span class="string">&quot;slug&quot;</span>, <span class="string">&quot;slug&quot;</span>, <span class="string">&quot;slugs&quot;</span>;
+        @<span class="ident">ton_assay</span>: <span class="number">2.916_667_E-2</span>; <span class="string">&quot;AT&quot;</span>, <span class="string">&quot;assay ton&quot;</span>, <span class="string">&quot;assay tons&quot;</span>;
+        @<span class="ident">ton_long</span>: <span class="number">1.016_047_E3</span>; <span class="string">&quot;2240 lb&quot;</span>, <span class="string">&quot;long ton&quot;</span>, <span class="string">&quot;long tons&quot;</span>;
+        @<span class="ident">ton_short</span>: <span class="number">9.071_847_E2</span>; <span class="string">&quot;2000 lb&quot;</span>, <span class="string">&quot;short ton&quot;</span>, <span class="string">&quot;short tons&quot;</span>;
+        @<span class="ident">ton</span>: <span class="number">1.0_E3</span>; <span class="string">&quot;t&quot;</span>, <span class="string">&quot;ton&quot;</span>, <span class="string">&quot;tons&quot;</span>; <span class="comment">// ton, metric</span>
+    }
+}
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "uom";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Ack","Acknowledge a request without returning any extra information."],["Nack","The message was not acknowledged."]],"trait":[["Handler","Something which can handle a request and generate a response."]]});

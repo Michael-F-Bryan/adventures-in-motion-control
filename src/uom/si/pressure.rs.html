@@ -1,0 +1,301 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/uom-0.26.0/src/si/pressure.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>pressure.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../uom/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="doccomment">//! Pressure (base unit pascal, kg · m⁻¹ · s⁻²).</span>
+
+<span class="macro">quantity</span><span class="macro">!</span> {
+    <span class="doccomment">/// Pressure (base unit pascal, kg · m⁻¹ · s⁻²).</span>
+    <span class="ident">quantity</span>: <span class="ident">Pressure</span>; <span class="string">&quot;pressure&quot;</span>;
+    <span class="doccomment">/// Dimension of pressure, L⁻¹MT⁻² (base unit pascal, kg · m⁻¹ · s⁻²).</span>
+    <span class="ident">dimension</span>: <span class="ident">ISQ</span><span class="op">&lt;</span>
+        <span class="ident">N1</span>,     <span class="comment">// length</span>
+        <span class="ident">P1</span>,     <span class="comment">// mass</span>
+        <span class="ident">N2</span>,     <span class="comment">// time</span>
+        <span class="ident">Z0</span>,     <span class="comment">// electric current</span>
+        <span class="ident">Z0</span>,     <span class="comment">// thermodynamic temperature</span>
+        <span class="ident">Z0</span>,     <span class="comment">// amount of substance</span>
+        <span class="ident">Z0</span><span class="op">&gt;</span>;    <span class="comment">// luminous intensity</span>
+    <span class="ident">units</span> {
+        @<span class="ident">yottapascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">yotta</span>); <span class="string">&quot;YPa&quot;</span>, <span class="string">&quot;yottapascal&quot;</span>, <span class="string">&quot;yottapascals&quot;</span>;
+        @<span class="ident">zettapascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">zetta</span>); <span class="string">&quot;ZPa&quot;</span>, <span class="string">&quot;zettapascal&quot;</span>, <span class="string">&quot;zettapascals&quot;</span>;
+        @<span class="ident">exapascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">exa</span>); <span class="string">&quot;EPa&quot;</span>, <span class="string">&quot;exapascal&quot;</span>, <span class="string">&quot;exapascals&quot;</span>;
+        @<span class="ident">petapascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">peta</span>); <span class="string">&quot;PPa&quot;</span>, <span class="string">&quot;petapascal&quot;</span>, <span class="string">&quot;petapascals&quot;</span>;
+        @<span class="ident">terapascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">tera</span>); <span class="string">&quot;TPa&quot;</span>, <span class="string">&quot;terapascal&quot;</span>, <span class="string">&quot;terapascals&quot;</span>;
+        @<span class="ident">gigapascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">giga</span>); <span class="string">&quot;GPa&quot;</span>, <span class="string">&quot;gigapascal&quot;</span>, <span class="string">&quot;gigapascals&quot;</span>;
+        @<span class="ident">megapascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">mega</span>); <span class="string">&quot;MPa&quot;</span>, <span class="string">&quot;megapascal&quot;</span>, <span class="string">&quot;megapascals&quot;</span>;
+        @<span class="ident">kilopascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;kPa&quot;</span>, <span class="string">&quot;kilopascal&quot;</span>, <span class="string">&quot;kilopascals&quot;</span>;
+        @<span class="ident">hectopascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">hecto</span>); <span class="string">&quot;hPa&quot;</span>, <span class="string">&quot;hectopascal&quot;</span>, <span class="string">&quot;hectopascals&quot;</span>;
+        @<span class="ident">decapascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">deca</span>); <span class="string">&quot;daPa&quot;</span>, <span class="string">&quot;decapascal&quot;</span>, <span class="string">&quot;decapascals&quot;</span>;
+        <span class="doccomment">/// Derived unit of pressure.</span>
+        @<span class="ident">pascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">none</span>); <span class="string">&quot;Pa&quot;</span>, <span class="string">&quot;pascal&quot;</span>, <span class="string">&quot;pascals&quot;</span>;
+        @<span class="ident">decipascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">deci</span>); <span class="string">&quot;dPa&quot;</span>, <span class="string">&quot;decipascal&quot;</span>, <span class="string">&quot;decipascals&quot;</span>;
+        @<span class="ident">centipascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">centi</span>); <span class="string">&quot;cPa&quot;</span>, <span class="string">&quot;centipascal&quot;</span>, <span class="string">&quot;centipascals&quot;</span>;
+        @<span class="ident">millipascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">milli</span>); <span class="string">&quot;mPa&quot;</span>, <span class="string">&quot;millipascal&quot;</span>, <span class="string">&quot;millipascals&quot;</span>;
+        @<span class="ident">micropascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">micro</span>); <span class="string">&quot;µPa&quot;</span>, <span class="string">&quot;micropascal&quot;</span>, <span class="string">&quot;micropascals&quot;</span>;
+        @<span class="ident">nanopascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">nano</span>); <span class="string">&quot;nPa&quot;</span>, <span class="string">&quot;nanopascal&quot;</span>, <span class="string">&quot;nanopascals&quot;</span>;
+        @<span class="ident">picopascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">pico</span>); <span class="string">&quot;pPa&quot;</span>, <span class="string">&quot;picopascal&quot;</span>, <span class="string">&quot;picopascals&quot;</span>;
+        @<span class="ident">femtopascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">femto</span>); <span class="string">&quot;fPa&quot;</span>, <span class="string">&quot;femtopascal&quot;</span>, <span class="string">&quot;femtopascals&quot;</span>;
+        @<span class="ident">attopascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">atto</span>); <span class="string">&quot;aPa&quot;</span>, <span class="string">&quot;attopascal&quot;</span>, <span class="string">&quot;attopascals&quot;</span>;
+        @<span class="ident">zeptopascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">zepto</span>); <span class="string">&quot;zPa&quot;</span>, <span class="string">&quot;zeptopascal&quot;</span>, <span class="string">&quot;zeptopascals&quot;</span>;
+        @<span class="ident">yoctopascal</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">yocto</span>); <span class="string">&quot;yPa&quot;</span>, <span class="string">&quot;yoctopascal&quot;</span>, <span class="string">&quot;yoctopascals&quot;</span>;
+
+        @<span class="ident">atmosphere</span>: <span class="number">1.013_25_E5</span>; <span class="string">&quot;atm&quot;</span>, <span class="string">&quot;atmosphere&quot;</span>, <span class="string">&quot;atmospheres&quot;</span>;
+        @<span class="ident">atmosphere_technical</span>: <span class="number">9.806_65_E4</span>; <span class="string">&quot;at&quot;</span>, <span class="string">&quot;atmosphere (technical)&quot;</span>,
+            <span class="string">&quot;atmospheres (technical)&quot;</span>;
+        @<span class="ident">bar</span>: <span class="number">1.0_E5</span>; <span class="string">&quot;bar&quot;</span>, <span class="string">&quot;bar&quot;</span>, <span class="string">&quot;bar&quot;</span>;
+        @<span class="ident">centimeter_of_mercury_0</span>: <span class="number">1.333_22_E3</span>; <span class="string">&quot;cm Hg (0 °C)&quot;</span>, <span class="string">&quot;centimeter of mercury (0 °C)&quot;</span>,
+            <span class="string">&quot;centimeters of mercury (0 °C)&quot;</span>;
+        @<span class="ident">centimeter_of_mercury</span>: <span class="number">1.333_224_E3</span>; <span class="string">&quot;cm Hg&quot;</span>, <span class="string">&quot;centimeter of mercury&quot;</span>,
+            <span class="string">&quot;centimeters of mercury&quot;</span>;
+        @<span class="ident">centimeter_of_water_4</span>: <span class="number">9.806_38_E1</span>; <span class="string">&quot;cm H₂O (4 °C)&quot;</span>, <span class="string">&quot;centimeter of water (4 °C)&quot;</span>,
+            <span class="string">&quot;centimeters of water (4 °C)&quot;</span>;
+        @<span class="ident">centimeter_of_water</span>: <span class="number">9.806_65_E1</span>; <span class="string">&quot;cm H₂O&quot;</span>, <span class="string">&quot;centimeter of water&quot;</span>, <span class="string">&quot;centimeters of water&quot;</span>;
+        @<span class="ident">dyne_per_square_centimeter</span>: <span class="number">1.0_E-1</span>; <span class="string">&quot;dyn/cm²&quot;</span>, <span class="string">&quot;dyne per square centimeter&quot;</span>,
+            <span class="string">&quot;dynes per square centimeter&quot;</span>;
+        @<span class="ident">foot_of_mercury</span>: <span class="number">4.063_666_E4</span>; <span class="string">&quot;ft Hg&quot;</span>, <span class="string">&quot;foot of mercury&quot;</span>, <span class="string">&quot;feet of mercury&quot;</span>;
+        @<span class="ident">foot_of_water_39_2</span>: <span class="number">2.988_98_E3</span>; <span class="string">&quot;ft H₂O (39.2 °F)&quot;</span>, <span class="string">&quot;foot of water (39.2 °F)&quot;</span>,
+            <span class="string">&quot;feet of water (39.2 °F)&quot;</span>;
+        @<span class="ident">foot_of_water</span>: <span class="number">2.989_067_E3</span>; <span class="string">&quot;ft H₂O&quot;</span>, <span class="string">&quot;foot of water&quot;</span>, <span class="string">&quot;feet of water&quot;</span>;
+        @<span class="ident">gram_force_per_square_centimeter</span>: <span class="number">9.806_65_E1</span>; <span class="string">&quot;gf/cm²&quot;</span>,
+            <span class="string">&quot;gram-force per square centimeter&quot;</span>, <span class="string">&quot;grams-force per square centimeter&quot;</span>;
+        @<span class="ident">inch_of_mercury_32</span>: <span class="number">3.386_38_E3</span>; <span class="string">&quot;in Hg (32 °F)&quot;</span>, <span class="string">&quot;inch of mercury (32 °F)&quot;</span>,
+            <span class="string">&quot;inches of mercury (32 °F)&quot;</span>;
+        @<span class="ident">inch_of_mercury_60</span>: <span class="number">3.376_85_E3</span>; <span class="string">&quot;in Hg (60 °F)&quot;</span>, <span class="string">&quot;inch of mercury (60 °F)&quot;</span>,
+            <span class="string">&quot;inches of mercury (60 °F)&quot;</span>;
+        @<span class="ident">inch_of_mercury</span>: <span class="number">3.386_389_E3</span>; <span class="string">&quot;in Hg&quot;</span>, <span class="string">&quot;inch of mercury&quot;</span>, <span class="string">&quot;inches of mercury&quot;</span>;
+        @<span class="ident">inch_of_water_39_2</span>: <span class="number">2.490_82_E2</span>; <span class="string">&quot;in H₂O (39.2 °F)&quot;</span>, <span class="string">&quot;inch of water (39.2 °F)&quot;</span>,
+            <span class="string">&quot;inches of water (39.2 °F)&quot;</span>;
+        @<span class="ident">inch_of_water_60</span>: <span class="number">2.488_4_E2</span>; <span class="string">&quot;in H₂O (60 °F)&quot;</span>, <span class="string">&quot;inch of water (60 °F)&quot;</span>,
+            <span class="string">&quot;inches of water (60 °F)&quot;</span>;
+        @<span class="ident">inch_of_water</span>: <span class="number">2.490_889_E2</span>; <span class="string">&quot;in H₂O&quot;</span>, <span class="string">&quot;inch of water&quot;</span>, <span class="string">&quot;inches of water&quot;</span>;
+        @<span class="ident">kilogram_force_per_square_centimeter</span>: <span class="number">9.806_65_E4</span>; <span class="string">&quot;kgf/cm²&quot;</span>,
+            <span class="string">&quot;kilogram-force per square centimeter&quot;</span>, <span class="string">&quot;kilograms-force per square centimeter&quot;</span>;
+        @<span class="ident">kilogram_force_per_square_meter</span>: <span class="number">9.806_65_E0</span>; <span class="string">&quot;kgf/m²&quot;</span>,
+            <span class="string">&quot;kilogram-force per square meter&quot;</span>, <span class="string">&quot;kilograms-force per square meter&quot;</span>;
+        @<span class="ident">kilogram_force_per_square_millimeter</span>: <span class="number">9.806_65_E6</span>; <span class="string">&quot;kgf/mm²&quot;</span>,
+            <span class="string">&quot;kilogram-force per square millimeter&quot;</span>, <span class="string">&quot;kilograms-force per square millimeter&quot;</span>;
+        @<span class="ident">kip_per_square_inch</span>: <span class="number">6.894_757_889_515_779_E6</span>; <span class="string">&quot;kip/in²&quot;</span>, <span class="string">&quot;kip per square inch&quot;</span>,
+            <span class="string">&quot;kips per square inch&quot;</span>;
+        @<span class="ident">millibar</span>: <span class="number">1.0_E2</span>; <span class="string">&quot;mbar&quot;</span>, <span class="string">&quot;millibar&quot;</span>, <span class="string">&quot;millibar&quot;</span>;
+        @<span class="ident">millimeter_of_mercury</span>: <span class="number">1.333_224_E2</span>; <span class="string">&quot;mm Hg&quot;</span>, <span class="string">&quot;millimeter of mercury&quot;</span>,
+            <span class="string">&quot;millimeters of mercury&quot;</span>;
+        @<span class="ident">millimeter_of_water</span>: <span class="number">9.806_65_E0</span>; <span class="string">&quot;mm H₂O&quot;</span>, <span class="string">&quot;millimeter of water&quot;</span>,
+            <span class="string">&quot;millimeters of water&quot;</span>;
+        @<span class="ident">millitorr</span>: <span class="number">1.333_224_E-1</span>; <span class="string">&quot;mTorr&quot;</span>, <span class="string">&quot;millitorr&quot;</span>, <span class="string">&quot;millitorr&quot;</span>;
+        @<span class="ident">poundal_per_square_foot</span>: <span class="number">1.488_164_434_662_202_5_E0</span>; <span class="string">&quot;pdl/ft²&quot;</span>, <span class="string">&quot;poundal per square foot&quot;</span>,
+            <span class="string">&quot;poundals per square foot&quot;</span>;
+        @<span class="ident">pound_force_per_square_foot</span>: <span class="number">4.788_026_312_163_735_6_E1</span>; <span class="string">&quot;lbf/ft²&quot;</span>, <span class="string">&quot;pound-force per square foot&quot;</span>,
+            <span class="string">&quot;pounds-force per square foot&quot;</span>;
+        @<span class="ident">pound_force_per_square_inch</span>: <span class="number">6.894_757_889_515_779_E3</span>; <span class="string">&quot;lbf/in²&quot;</span>, <span class="string">&quot;pound-force per square inch&quot;</span>,
+            <span class="string">&quot;pounds-force per square inch&quot;</span>;
+        @<span class="ident">psi</span>: <span class="number">6.894_757_E3</span>; <span class="string">&quot;psi&quot;</span>, <span class="string">&quot;pound-force per square inch&quot;</span>,
+            <span class="string">&quot;pounds-force per square inch&quot;</span>;
+        @<span class="ident">torr</span>: <span class="number">1.333_224_E2</span>; <span class="string">&quot;Torr&quot;</span>, <span class="string">&quot;torr&quot;</span>, <span class="string">&quot;torr&quot;</span>;
+    }
+}
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="macro">storage_types</span><span class="macro">!</span> {
+        <span class="kw">use</span> <span class="ident">num</span>::<span class="ident">One</span>;
+        <span class="kw">use</span> <span class="ident">si</span>::<span class="ident">quantities</span>::<span class="kw-2">*</span>;
+        <span class="kw">use</span> <span class="ident">si</span>::<span class="ident">force</span> <span class="kw">as</span> <span class="ident">f</span>;
+        <span class="kw">use</span> <span class="ident">si</span>::<span class="ident">area</span> <span class="kw">as</span> <span class="ident">a</span>;
+        <span class="kw">use</span> <span class="ident">si</span>::<span class="ident">pressure</span> <span class="kw">as</span> <span class="ident">p</span>;
+        <span class="kw">use</span> <span class="ident">tests</span>::<span class="ident">Test</span>;
+
+        <span class="attribute">#[<span class="ident">test</span>]</span>
+        <span class="kw">fn</span> <span class="ident">check_dimension</span>() {
+            <span class="kw">let</span> <span class="kw">_</span>: <span class="ident">Pressure</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Force</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">newton</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                <span class="op">/</span> <span class="ident">Area</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">a</span>::<span class="ident">square_meter</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>());
+        }
+
+        <span class="attribute">#[<span class="ident">test</span>]</span>
+        <span class="kw">fn</span> <span class="ident">check_units</span>() {
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">yottanewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">yottapascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">zettanewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">zettapascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">exanewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">exapascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">petanewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">petapascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">teranewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">terapascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">giganewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">gigapascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">meganewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">megapascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">kilonewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">kilopascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">hectonewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">hectopascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">decanewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">decapascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">newton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">pascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">decinewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">decipascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">centinewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">centipascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">millinewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">millipascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">micronewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">micropascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">nanonewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">nanopascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">piconewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">picopascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">femtonewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">femtopascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">attonewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">attopascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">zeptonewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">zeptopascal</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">yoctonewton</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">yoctopascal</span><span class="op">&gt;</span>();
+
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">dyne</span>, <span class="ident">a</span>::<span class="ident">square_centimeter</span>, <span class="ident">p</span>::<span class="ident">dyne_per_square_centimeter</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">kilogram_force</span>, <span class="ident">a</span>::<span class="ident">square_millimeter</span>, <span class="ident">p</span>::<span class="ident">kilogram_force_per_square_millimeter</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">kilogram_force</span>, <span class="ident">a</span>::<span class="ident">square_centimeter</span>, <span class="ident">p</span>::<span class="ident">kilogram_force_per_square_centimeter</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">kilogram_force</span>, <span class="ident">a</span>::<span class="ident">square_meter</span>, <span class="ident">p</span>::<span class="ident">kilogram_force_per_square_meter</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">kip</span>, <span class="ident">a</span>::<span class="ident">square_inch</span>, <span class="ident">p</span>::<span class="ident">kip_per_square_inch</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">poundal</span>, <span class="ident">a</span>::<span class="ident">square_foot</span>, <span class="ident">p</span>::<span class="ident">poundal_per_square_foot</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">pound_force</span>, <span class="ident">a</span>::<span class="ident">square_inch</span>, <span class="ident">p</span>::<span class="ident">pound_force_per_square_inch</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">f</span>::<span class="ident">pound_force</span>, <span class="ident">a</span>::<span class="ident">square_foot</span>, <span class="ident">p</span>::<span class="ident">pound_force_per_square_foot</span><span class="op">&gt;</span>();
+
+            <span class="kw">fn</span> <span class="ident">test</span><span class="op">&lt;</span><span class="ident">F</span>: <span class="ident">f</span>::<span class="ident">Conversion</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>, <span class="ident">A</span>: <span class="ident">a</span>::<span class="ident">Conversion</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>, <span class="ident">P</span>: <span class="ident">p</span>::<span class="ident">Conversion</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span><span class="op">&gt;</span>() {
+                <span class="ident">Test</span>::<span class="ident">assert_approx_eq</span>(<span class="kw-2">&amp;</span><span class="ident">Pressure</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>()),
+                    <span class="kw-2">&amp;</span>(<span class="ident">Force</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>()) <span class="op">/</span> <span class="ident">Area</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())));
+            }
+        }
+    }
+}
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "uom";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/uom-0.26.0/src/si/energy.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>energy.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../uom/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="doccomment">//! Energy (base unit joule, kg · m² · s⁻²).</span>
+
+<span class="macro">quantity</span><span class="macro">!</span> {
+    <span class="doccomment">/// Energy (base unit joule, kg · m² · s⁻²).</span>
+    <span class="ident">quantity</span>: <span class="ident">Energy</span>; <span class="string">&quot;energy&quot;</span>;
+    <span class="doccomment">/// Dimension of energy, L²MT⁻² (base unit joule, kg · m² · s⁻²).</span>
+    <span class="ident">dimension</span>: <span class="ident">ISQ</span><span class="op">&lt;</span>
+        <span class="ident">P2</span>,     <span class="comment">// length</span>
+        <span class="ident">P1</span>,     <span class="comment">// mass</span>
+        <span class="ident">N2</span>,     <span class="comment">// time</span>
+        <span class="ident">Z0</span>,     <span class="comment">// electric current</span>
+        <span class="ident">Z0</span>,     <span class="comment">// thermodynamic temperature</span>
+        <span class="ident">Z0</span>,     <span class="comment">// amount of substance</span>
+        <span class="ident">Z0</span><span class="op">&gt;</span>;    <span class="comment">// luminous intensity</span>
+    <span class="ident">units</span> {
+        @<span class="ident">yottajoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">yotta</span>); <span class="string">&quot;YJ&quot;</span>, <span class="string">&quot;yottajoule&quot;</span>, <span class="string">&quot;yottajoules&quot;</span>;
+        @<span class="ident">zettajoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">zetta</span>); <span class="string">&quot;ZJ&quot;</span>, <span class="string">&quot;zettajoule&quot;</span>, <span class="string">&quot;zettajoules&quot;</span>;
+        @<span class="ident">exajoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">exa</span>); <span class="string">&quot;EJ&quot;</span>, <span class="string">&quot;exajoule&quot;</span>, <span class="string">&quot;exajoules&quot;</span>;
+        @<span class="ident">petajoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">peta</span>); <span class="string">&quot;PJ&quot;</span>, <span class="string">&quot;petajoule&quot;</span>, <span class="string">&quot;petajoules&quot;</span>;
+        @<span class="ident">terajoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">tera</span>); <span class="string">&quot;TJ&quot;</span>, <span class="string">&quot;terajoule&quot;</span>, <span class="string">&quot;terajoules&quot;</span>;
+        @<span class="ident">gigajoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">giga</span>); <span class="string">&quot;GJ&quot;</span>, <span class="string">&quot;gigajoule&quot;</span>, <span class="string">&quot;gigajoules&quot;</span>;
+        @<span class="ident">megajoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">mega</span>); <span class="string">&quot;MJ&quot;</span>, <span class="string">&quot;megajoule&quot;</span>, <span class="string">&quot;megajoules&quot;</span>;
+        @<span class="ident">kilojoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;kJ&quot;</span>, <span class="string">&quot;kilojoule&quot;</span>, <span class="string">&quot;kilojoules&quot;</span>;
+        @<span class="ident">hectojoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">hecto</span>); <span class="string">&quot;hJ&quot;</span>, <span class="string">&quot;hectojoule&quot;</span>, <span class="string">&quot;hectojoules&quot;</span>;
+        @<span class="ident">decajoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">deca</span>); <span class="string">&quot;daJ&quot;</span>, <span class="string">&quot;decajoule&quot;</span>, <span class="string">&quot;decajoules&quot;</span>;
+        <span class="doccomment">/// Derived unit of energy.</span>
+        @<span class="ident">joule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">none</span>); <span class="string">&quot;J&quot;</span>, <span class="string">&quot;joule&quot;</span>, <span class="string">&quot;joules&quot;</span>;
+        @<span class="ident">decijoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">deci</span>); <span class="string">&quot;dJ&quot;</span>, <span class="string">&quot;decijoule&quot;</span>, <span class="string">&quot;decijoules&quot;</span>;
+        @<span class="ident">centijoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">centi</span>); <span class="string">&quot;cJ&quot;</span>, <span class="string">&quot;centijoule&quot;</span>, <span class="string">&quot;centijoules&quot;</span>;
+        @<span class="ident">millijoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">milli</span>); <span class="string">&quot;mJ&quot;</span>, <span class="string">&quot;milljoule&quot;</span>, <span class="string">&quot;milljoules&quot;</span>;
+        @<span class="ident">microjoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">micro</span>); <span class="string">&quot;µJ&quot;</span>, <span class="string">&quot;microjoule&quot;</span>, <span class="string">&quot;microjoules&quot;</span>;
+        @<span class="ident">nanojoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">nano</span>); <span class="string">&quot;nJ&quot;</span>, <span class="string">&quot;nanojoule&quot;</span>, <span class="string">&quot;nanojoules&quot;</span>;
+        @<span class="ident">picojoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">pico</span>); <span class="string">&quot;pJ&quot;</span>, <span class="string">&quot;picojoule&quot;</span>, <span class="string">&quot;picojoules&quot;</span>;
+        @<span class="ident">femtojoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">femto</span>); <span class="string">&quot;fJ&quot;</span>, <span class="string">&quot;femtojoule&quot;</span>, <span class="string">&quot;femtojoules&quot;</span>;
+        @<span class="ident">attojoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">atto</span>); <span class="string">&quot;aJ&quot;</span>, <span class="string">&quot;attojoule&quot;</span>, <span class="string">&quot;attojoules&quot;</span>;
+        @<span class="ident">zeptojoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">zepto</span>); <span class="string">&quot;zJ&quot;</span>, <span class="string">&quot;zeptojoule&quot;</span>, <span class="string">&quot;zeptojoules&quot;</span>;
+        @<span class="ident">yoctojoule</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">yocto</span>); <span class="string">&quot;yJ&quot;</span>, <span class="string">&quot;yoctojoule&quot;</span>, <span class="string">&quot;yoctojoules&quot;</span>;
+
+        @<span class="ident">petawatt_hour</span>: <span class="number">3.6_E18</span>; <span class="string">&quot;PW · h&quot;</span>, <span class="string">&quot;petawatt hour&quot;</span>, <span class="string">&quot;petawatt hours&quot;</span>;
+        @<span class="ident">terawatt_hour</span>: <span class="number">3.6_E15</span>; <span class="string">&quot;TW · h&quot;</span>, <span class="string">&quot;terawatt hour&quot;</span>, <span class="string">&quot;terawatt hours&quot;</span>;
+        @<span class="ident">gigawatt_hour</span>: <span class="number">3.6_E12</span>; <span class="string">&quot;GW · h&quot;</span>, <span class="string">&quot;gigawatt hour&quot;</span>, <span class="string">&quot;gigawatt hours&quot;</span>;
+        @<span class="ident">megawatt_hour</span>: <span class="number">3.6_E9</span>; <span class="string">&quot;MW · h&quot;</span>, <span class="string">&quot;megawatt hour&quot;</span>, <span class="string">&quot;megawatt hours&quot;</span>;
+        @<span class="ident">kilowatt_hour</span>: <span class="number">3.6_E6</span>; <span class="string">&quot;kW · h&quot;</span>, <span class="string">&quot;kilowatt hour&quot;</span>, <span class="string">&quot;kilowatt hours&quot;</span>;
+        @<span class="ident">hectowatt_hour</span>: <span class="number">3.6_E5</span>; <span class="string">&quot;hW · h&quot;</span>, <span class="string">&quot;hectowatt hour&quot;</span>, <span class="string">&quot;hectowatt hours&quot;</span>;
+        @<span class="ident">decawatt_hour</span>: <span class="number">3.6_E4</span>; <span class="string">&quot;daW · h&quot;</span>, <span class="string">&quot;decawatt hour&quot;</span>, <span class="string">&quot;decawatt hours&quot;</span>;
+        @<span class="ident">watt_hour</span>: <span class="number">3.6_E3</span>; <span class="string">&quot;W · h&quot;</span>, <span class="string">&quot;watt hour&quot;</span>, <span class="string">&quot;watt hours&quot;</span>;
+        @<span class="ident">milliwatt_hour</span>: <span class="number">3.6_E0</span>; <span class="string">&quot;mW · h&quot;</span>, <span class="string">&quot;milliwatt hour&quot;</span>, <span class="string">&quot;milliwatt hours&quot;</span>;
+        @<span class="ident">microwatt_hour</span>: <span class="number">3.6_E-3</span>; <span class="string">&quot;µW · h&quot;</span>, <span class="string">&quot;microwatt hour&quot;</span>, <span class="string">&quot;microwatt hours&quot;</span>;
+
+        @<span class="ident">btu_it</span>: <span class="number">1.055_056_E3</span>; <span class="string">&quot;Btu (IT)&quot;</span>, <span class="string">&quot;British thermal unit (IT)&quot;</span>,
+            <span class="string">&quot;British thermal units (IT)&quot;</span>;
+        @<span class="ident">btu</span>: <span class="number">1.054_350_E3</span>; <span class="string">&quot;Btu&quot;</span>, <span class="string">&quot;British thermal unit&quot;</span>, <span class="string">&quot;British thermal units&quot;</span>;
+        @<span class="ident">btu_39</span>: <span class="number">1.059_67_E3</span>; <span class="string">&quot;Btu₃₉&quot;</span>, <span class="string">&quot;British thermal unit (39 °F)&quot;</span>,
+            <span class="string">&quot;British thermal units (39 °F)&quot;</span>;
+        @<span class="ident">btu_59</span>: <span class="number">1.054_80_E3</span>; <span class="string">&quot;Btu₅₉&quot;</span>, <span class="string">&quot;British thermal unit (59 °F)&quot;</span>,
+            <span class="string">&quot;British thermal units (59 °F)&quot;</span>;
+        @<span class="ident">btu_60</span>: <span class="number">1.054_68_E3</span>; <span class="string">&quot;Btu₆₀&quot;</span>, <span class="string">&quot;British thermal unit (60 °F)&quot;</span>,
+            <span class="string">&quot;British thermal units (60 °F)&quot;</span>;
+        @<span class="ident">calorie_it</span>: <span class="number">4.186_8_E0</span>; <span class="string">&quot;cal (IT)&quot;</span>, <span class="string">&quot;calorie (IT)&quot;</span>, <span class="string">&quot;calories (IT)&quot;</span>;
+        @<span class="ident">calorie</span>: <span class="number">4.184_E0</span>; <span class="string">&quot;cal&quot;</span>, <span class="string">&quot;calorie&quot;</span>, <span class="string">&quot;calories&quot;</span>;
+        @<span class="ident">calorie_15</span>: <span class="number">4.185_80_E0</span>; <span class="string">&quot;cal₁₅&quot;</span>, <span class="string">&quot;calorie (15 °C)&quot;</span>, <span class="string">&quot;calories (15 °C)&quot;</span>;
+        @<span class="ident">calorie_20</span>: <span class="number">4.181_90_E0</span>; <span class="string">&quot;cal₂₀&quot;</span>, <span class="string">&quot;calorie (20 °C)&quot;</span>, <span class="string">&quot;calories (20 °C)&quot;</span>;
+        @<span class="ident">calorie_it_nutrition</span>: <span class="number">4.186_8_E3</span>; <span class="string">&quot;Cal (IT)&quot;</span>, <span class="string">&quot;Calorie (IT)&quot;</span>, <span class="string">&quot;Calories (IT)&quot;</span>;
+        @<span class="ident">calorie_nutrition</span>: <span class="number">4.184_E3</span>; <span class="string">&quot;Cal&quot;</span>, <span class="string">&quot;Calorie&quot;</span>, <span class="string">&quot;Calories&quot;</span>;
+        @<span class="ident">electronvolt</span>: <span class="number">1.602_177_E-19</span>; <span class="string">&quot;eV&quot;</span>, <span class="string">&quot;electronvolt&quot;</span>, <span class="string">&quot;electronvolts&quot;</span>;
+        @<span class="ident">erg</span>: <span class="number">1.0_E-7</span>; <span class="string">&quot;erg&quot;</span>, <span class="string">&quot;erg&quot;</span>, <span class="string">&quot;ergs&quot;</span>;
+        @<span class="ident">foot_poundal</span>: <span class="number">4.214_011_E-2</span>; <span class="string">&quot;ft · pdl&quot;</span>, <span class="string">&quot;foot poundal&quot;</span>, <span class="string">&quot;foot poundals&quot;</span>;
+        @<span class="ident">foot_pound</span>: <span class="number">1.355_818_E0</span>; <span class="string">&quot;ft · lbf&quot;</span>, <span class="string">&quot;foot pound-force&quot;</span>,
+            <span class="string">&quot;foot pounds-force&quot;</span>; <span class="comment">// @foot_pound_force</span>
+        @<span class="ident">kilocalorie_it</span>: <span class="number">4.186_8_E3</span>; <span class="string">&quot;kcal (IT)&quot;</span>, <span class="string">&quot;kilocalorie (IT)&quot;</span>, <span class="string">&quot;kilocalories (IT)&quot;</span>;
+        @<span class="ident">kilocalorie</span>: <span class="number">4.184_E3</span>; <span class="string">&quot;kcal&quot;</span>, <span class="string">&quot;kilocalorie&quot;</span>, <span class="string">&quot;kilocalories&quot;</span>;
+        @<span class="ident">quad</span>: <span class="number">1.055_056_E18</span>; <span class="string">&quot;10¹⁵ Btu (IT)&quot;</span>, <span class="string">&quot;quad&quot;</span>, <span class="string">&quot;quads&quot;</span>;
+        @<span class="ident">therm_ec</span>: <span class="number">1.055_06_E8</span>; <span class="string">&quot;thm (EC)&quot;</span>, <span class="string">&quot;therm (EC)&quot;</span>, <span class="string">&quot;therms (EC)&quot;</span>;
+        @<span class="ident">therm_us</span>: <span class="number">1.054_804_E8</span>; <span class="string">&quot;thm&quot;</span>, <span class="string">&quot;therm&quot;</span>, <span class="string">&quot;therms&quot;</span>;
+        @<span class="ident">ton_tnt</span>: <span class="number">4.184_E9</span>; <span class="string">&quot;t of TNT&quot;</span>, <span class="string">&quot;ton of TNT&quot;</span>, <span class="string">&quot;tons of TNT&quot;</span>;
+        @<span class="ident">watt_second</span>: <span class="number">1.0_E0</span>; <span class="string">&quot;W · s&quot;</span>, <span class="string">&quot;watt second&quot;</span>, <span class="string">&quot;watt seconds&quot;</span>;
+    }
+}
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="macro">storage_types</span><span class="macro">!</span> {
+        <span class="kw">use</span> <span class="ident">num</span>::<span class="ident">One</span>;
+        <span class="kw">use</span> <span class="ident">si</span>::<span class="ident">quantities</span>::<span class="kw-2">*</span>;
+        <span class="kw">use</span> <span class="ident">si</span>::<span class="ident">area</span> <span class="kw">as</span> <span class="ident">a</span>;
+        <span class="kw">use</span> <span class="ident">si</span>::<span class="ident">mass</span> <span class="kw">as</span> <span class="ident">m</span>;
+        <span class="kw">use</span> <span class="ident">si</span>::<span class="ident">time</span> <span class="kw">as</span> <span class="ident">t</span>;
+        <span class="kw">use</span> <span class="ident">si</span>::<span class="ident">energy</span> <span class="kw">as</span> <span class="ident">e</span>;
+        <span class="kw">use</span> <span class="ident">tests</span>::<span class="ident">Test</span>;
+
+        <span class="attribute">#[<span class="ident">test</span>]</span>
+        <span class="kw">fn</span> <span class="ident">check_dimension</span>() {
+            <span class="kw">let</span> <span class="kw">_</span>: <span class="ident">Energy</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Area</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">a</span>::<span class="ident">square_meter</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                <span class="op">*</span> <span class="ident">Mass</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">kilogram</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                <span class="op">/</span> (<span class="ident">Time</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">t</span>::<span class="ident">second</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>()) <span class="op">*</span> <span class="ident">Time</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">t</span>::<span class="ident">second</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>()));
+        }
+
+        <span class="attribute">#[<span class="ident">test</span>]</span>
+        <span class="kw">fn</span> <span class="ident">check_units</span>() {
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">yottagram</span>, <span class="ident">e</span>::<span class="ident">zettajoule</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">zettagram</span>, <span class="ident">e</span>::<span class="ident">exajoule</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">exagram</span>, <span class="ident">e</span>::<span class="ident">petajoule</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">petagram</span>, <span class="ident">e</span>::<span class="ident">terajoule</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">teragram</span>, <span class="ident">e</span>::<span class="ident">gigajoule</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">gigagram</span>, <span class="ident">e</span>::<span class="ident">megajoule</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">megagram</span>, <span class="ident">e</span>::<span class="ident">kilojoule</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">kilogram</span>, <span class="ident">e</span>::<span class="ident">joule</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">decagram</span>, <span class="ident">e</span>::<span class="ident">centijoule</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">gram</span>, <span class="ident">e</span>::<span class="ident">millijoule</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">milligram</span>, <span class="ident">e</span>::<span class="ident">microjoule</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">microgram</span>, <span class="ident">e</span>::<span class="ident">nanojoule</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">nanogram</span>, <span class="ident">e</span>::<span class="ident">picojoule</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">picogram</span>, <span class="ident">e</span>::<span class="ident">femtojoule</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">femtogram</span>, <span class="ident">e</span>::<span class="ident">attojoule</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">attogram</span>, <span class="ident">e</span>::<span class="ident">zeptojoule</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">zeptogram</span>, <span class="ident">e</span>::<span class="ident">yoctojoule</span><span class="op">&gt;</span>();
+
+            <span class="kw">fn</span> <span class="ident">test</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">m</span>::<span class="ident">Conversion</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>, <span class="ident">E</span>: <span class="ident">e</span>::<span class="ident">Conversion</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span><span class="op">&gt;</span>() {
+                <span class="ident">Test</span>::<span class="ident">assert_approx_eq</span>(<span class="kw-2">&amp;</span><span class="ident">Energy</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>()),
+                    <span class="kw-2">&amp;</span>(<span class="ident">Area</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">a</span>::<span class="ident">square_meter</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                        <span class="op">*</span> <span class="ident">Mass</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                        <span class="op">/</span> (<span class="ident">Time</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">t</span>::<span class="ident">second</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>()) <span class="op">*</span> <span class="ident">Time</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">t</span>::<span class="ident">second</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>()))));
+            }
+        }
+    }
+}
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "uom";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

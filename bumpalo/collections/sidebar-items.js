@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["CollectionAllocErr","Augments `AllocErr` with a CapacityOverflow variant."]],"mod":[["string","A UTF-8 encoded, growable string."],["vec","A contiguous growable array type with heap-allocated contents, written `Vec<'bump, T>`."]]});

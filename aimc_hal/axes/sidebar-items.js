@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["LimitSwitchState","The state of a set of limit switches."]],"trait":[["Axes","A driver for controlling axis motion using velocity control."],["Limits","A driver which tracks the limit switch state."]]});

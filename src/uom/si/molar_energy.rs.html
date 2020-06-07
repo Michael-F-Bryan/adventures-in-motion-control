@@ -1,0 +1,443 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/uom-0.26.0/src/si/molar_energy.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>molar_energy.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../uom/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="doccomment">//! Molar energy (base unit joule per mole, kg · m² · s⁻² · mol⁻¹).</span>
+
+<span class="macro">quantity</span><span class="macro">!</span> {
+    <span class="doccomment">/// Molar energy (base unit joule per mole, kg · m² · s⁻² · mol⁻¹).</span>
+    <span class="ident">quantity</span>: <span class="ident">MolarEnergy</span>; <span class="string">&quot;molar energy&quot;</span>;
+    <span class="doccomment">/// Dimension of molar energy, L²MT⁻²N⁻¹ (base unit joule per mole, kg · m² · s⁻² · mol⁻¹).</span>
+    <span class="ident">dimension</span>: <span class="ident">ISQ</span><span class="op">&lt;</span>
+        <span class="ident">P2</span>,     <span class="comment">// length</span>
+        <span class="ident">P1</span>,     <span class="comment">// mass</span>
+        <span class="ident">N2</span>,     <span class="comment">// time</span>
+        <span class="ident">Z0</span>,     <span class="comment">// electric current</span>
+        <span class="ident">Z0</span>,     <span class="comment">// thermodynamic temperature</span>
+        <span class="ident">N1</span>,     <span class="comment">// amount of substance</span>
+        <span class="ident">Z0</span><span class="op">&gt;</span>;    <span class="comment">// luminous intensity</span>
+    <span class="ident">units</span> {
+        <span class="doccomment">/// Molar energy expressed in base units. Equivalent to J/mol.</span>
+        @<span class="ident">kilogram_square_meter_per_second_squared_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>) <span class="op">/</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>);
+            <span class="string">&quot;kg · m²/(s² · mol)&quot;</span>, <span class="string">&quot;kilogram square meter per second squared mole&quot;</span>,
+            <span class="string">&quot;kilograms square meter per second squared mole&quot;</span>;
+
+        <span class="comment">// Molar energy is commonly expressed in terms of derived unit joule</span>
+        @<span class="ident">yottajoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">yotta</span>); <span class="string">&quot;YJ/mol&quot;</span>, <span class="string">&quot;yottajoule per mole&quot;</span>,
+            <span class="string">&quot;yottajoules per mole&quot;</span>;
+        @<span class="ident">zettajoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">zetta</span>); <span class="string">&quot;ZJ/mol&quot;</span>, <span class="string">&quot;zettajoule per mole&quot;</span>,
+            <span class="string">&quot;zettajoules per mole&quot;</span>;
+        @<span class="ident">exajoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">exa</span>); <span class="string">&quot;EJ/mol&quot;</span>, <span class="string">&quot;exajoule per mole&quot;</span>, <span class="string">&quot;exajoules per mole&quot;</span>;
+        @<span class="ident">petajoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">peta</span>); <span class="string">&quot;PJ/mol&quot;</span>, <span class="string">&quot;petajoule per mole&quot;</span>, <span class="string">&quot;petajoules per mole&quot;</span>;
+        @<span class="ident">terajoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">tera</span>); <span class="string">&quot;TJ/mol&quot;</span>, <span class="string">&quot;terajoule per mole&quot;</span>, <span class="string">&quot;terajoules per mole&quot;</span>;
+        @<span class="ident">gigajoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">giga</span>); <span class="string">&quot;GJ/mol&quot;</span>, <span class="string">&quot;gigajoule per mole&quot;</span>, <span class="string">&quot;gigajoules per mole&quot;</span>;
+        @<span class="ident">megajoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">mega</span>); <span class="string">&quot;MJ/mol&quot;</span>, <span class="string">&quot;megajoule per mole&quot;</span>, <span class="string">&quot;megajoules per mole&quot;</span>;
+        @<span class="ident">kilojoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;kJ/mol&quot;</span>, <span class="string">&quot;kilojoule per mole&quot;</span>, <span class="string">&quot;kilojoules per mole&quot;</span>;
+        @<span class="ident">hectojoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">hecto</span>); <span class="string">&quot;hJ/mol&quot;</span>, <span class="string">&quot;hectojoule per mole&quot;</span>,
+            <span class="string">&quot;hectojoules per mole&quot;</span>;
+        @<span class="ident">decajoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">deca</span>); <span class="string">&quot;daJ/mol&quot;</span>, <span class="string">&quot;decajoule per mole&quot;</span>, <span class="string">&quot;decajoules per mole&quot;</span>;
+        <span class="doccomment">/// The derived unit of molar energy. Equivalent to kg · m²/(s² · mol).</span>
+        @<span class="ident">joule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">none</span>); <span class="string">&quot;J/mol&quot;</span>, <span class="string">&quot;joule per mole&quot;</span>, <span class="string">&quot;joules per mole&quot;</span>;
+        @<span class="ident">decijoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">deci</span>); <span class="string">&quot;dJ/mol&quot;</span>, <span class="string">&quot;decijoule per mole&quot;</span>, <span class="string">&quot;decijoules per mole&quot;</span>;
+        @<span class="ident">centijoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">centi</span>); <span class="string">&quot;cJ/mol&quot;</span>, <span class="string">&quot;centijoule per mole&quot;</span>,
+            <span class="string">&quot;centijoules per mole&quot;</span>;
+        @<span class="ident">millijoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">milli</span>); <span class="string">&quot;mJ/mol&quot;</span>, <span class="string">&quot;millijoule per mole&quot;</span>,
+            <span class="string">&quot;millijoules per mole&quot;</span>;
+        @<span class="ident">microjoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">micro</span>); <span class="string">&quot;µJ/mol&quot;</span>, <span class="string">&quot;microjoule per mole&quot;</span>,
+            <span class="string">&quot;microjoules per mole&quot;</span>;
+        @<span class="ident">nanojoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">nano</span>); <span class="string">&quot;nJ/mol&quot;</span>, <span class="string">&quot;nanojoule per mole&quot;</span>, <span class="string">&quot;nanojoules per mole&quot;</span>;
+        @<span class="ident">picojoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">pico</span>); <span class="string">&quot;pJ/mol&quot;</span>, <span class="string">&quot;picojoule per mole&quot;</span>, <span class="string">&quot;picojoules per mole&quot;</span>;
+        @<span class="ident">femtojoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">femto</span>); <span class="string">&quot;fJ/mol&quot;</span>, <span class="string">&quot;femtojoule per mole&quot;</span>,
+            <span class="string">&quot;femtojoules per mole&quot;</span>;
+        @<span class="ident">attojoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">atto</span>); <span class="string">&quot;aJ/mol&quot;</span>, <span class="string">&quot;attojoule per mole&quot;</span>, <span class="string">&quot;attojoules per mole&quot;</span>;
+        @<span class="ident">zeptojoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">zepto</span>); <span class="string">&quot;zJ/mol&quot;</span>, <span class="string">&quot;zeptojoule per mole&quot;</span>,
+            <span class="string">&quot;zeptojoules per mole&quot;</span>;
+        @<span class="ident">yoctojoule_per_mole</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">yocto</span>); <span class="string">&quot;yJ/mol&quot;</span>, <span class="string">&quot;yoctojoule per mole&quot;</span>,
+            <span class="string">&quot;yoctojoules per mole&quot;</span>;
+
+        @<span class="ident">petawatt_hour_per_mole</span>: <span class="number">3.6_E18</span>; <span class="string">&quot;PW · h/mol&quot;</span>, <span class="string">&quot;petawatt hour per mole&quot;</span>,
+            <span class="string">&quot;petawatt hours per mole&quot;</span>;
+        @<span class="ident">terawatt_hour_per_mole</span>: <span class="number">3.6_E15</span>; <span class="string">&quot;TW · h/mol&quot;</span>, <span class="string">&quot;terawatt hour per mole&quot;</span>,
+            <span class="string">&quot;terawatt hours per mole&quot;</span>;
+        @<span class="ident">gigawatt_hour_per_mole</span>: <span class="number">3.6_E12</span>; <span class="string">&quot;GW · h/mol&quot;</span>, <span class="string">&quot;gigawatt hour per mole&quot;</span>,
+            <span class="string">&quot;gigawatt hours per mole&quot;</span>;
+        @<span class="ident">megawatt_hour_per_mole</span>: <span class="number">3.6_E9</span>; <span class="string">&quot;MW · h/mol&quot;</span>, <span class="string">&quot;megawatt hour per mole&quot;</span>,
+            <span class="string">&quot;megawatt hours per mole&quot;</span>;
+        @<span class="ident">kilowatt_hour_per_mole</span>: <span class="number">3.6_E6</span>; <span class="string">&quot;kW · h/mol&quot;</span>, <span class="string">&quot;kilowatt hour per mole&quot;</span>,
+            <span class="string">&quot;kilowatt hours per mole&quot;</span>;
+        @<span class="ident">hectowatt_hour_per_mole</span>: <span class="number">3.6_E5</span>; <span class="string">&quot;hW · h/mol&quot;</span>, <span class="string">&quot;hectowatt hour per mole&quot;</span>,
+            <span class="string">&quot;hectowatt hours per mole&quot;</span>;
+        @<span class="ident">decawatt_hour_per_mole</span>: <span class="number">3.6_E4</span>; <span class="string">&quot;daW · h/mol&quot;</span>, <span class="string">&quot;decawatt hour per mole&quot;</span>,
+            <span class="string">&quot;decawatt hours per mole&quot;</span>;
+        @<span class="ident">watt_hour_per_mole</span>: <span class="number">3.6_E3</span>; <span class="string">&quot;W · h/mol&quot;</span>, <span class="string">&quot;watt hour per mole&quot;</span>, <span class="string">&quot;watt hours per mole&quot;</span>;
+        @<span class="ident">milliwatt_hour_per_mole</span>: <span class="number">3.6_E0</span>; <span class="string">&quot;mW · h/mol&quot;</span>, <span class="string">&quot;milliwatt hour per mole&quot;</span>,
+            <span class="string">&quot;milliwatt hours per mole&quot;</span>;
+        @<span class="ident">microwatt_hour_per_mole</span>: <span class="number">3.6_E-3</span>; <span class="string">&quot;µW · h/mol&quot;</span>, <span class="string">&quot;microwatt hour per mole&quot;</span>,
+            <span class="string">&quot;microwatt hours per mole&quot;</span>;
+
+        @<span class="ident">btu_it_per_mole</span>: <span class="number">1.055_056_E3</span>; <span class="string">&quot;Btu (IT)/mol&quot;</span>, <span class="string">&quot;British thermal unit (IT) per mole&quot;</span>,
+            <span class="string">&quot;British thermal units (IT) per mole&quot;</span>;
+        @<span class="ident">btu_per_mole</span>: <span class="number">1.054_350_E3</span>; <span class="string">&quot;Btu/mol&quot;</span>, <span class="string">&quot;British thermal unit per mole&quot;</span>,
+            <span class="string">&quot;British thermal units per mole&quot;</span>;
+        @<span class="ident">btu_39_per_mole</span>: <span class="number">1.059_67_E3</span>; <span class="string">&quot;Btu₃₉/mol&quot;</span>, <span class="string">&quot;British thermal unit (39 °F) per mole&quot;</span>,
+            <span class="string">&quot;British thermal units (39 °F) per mole&quot;</span>;
+        @<span class="ident">btu_59_per_mole</span>: <span class="number">1.054_80_E3</span>; <span class="string">&quot;Btu₅₉/mol&quot;</span>, <span class="string">&quot;British thermal unit (59 °F) per mole&quot;</span>,
+            <span class="string">&quot;British thermal units (59 °F) per mole&quot;</span>;
+        @<span class="ident">btu_60_per_mole</span>: <span class="number">1.054_68_E3</span>; <span class="string">&quot;Btu₆₀/mol&quot;</span>, <span class="string">&quot;British thermal unit (60 °F) per mole&quot;</span>,
+            <span class="string">&quot;British thermal units (60 °F) per mole&quot;</span>;
+        @<span class="ident">calorie_it_per_mole</span>: <span class="number">4.186_8_E0</span>; <span class="string">&quot;cal (IT)/mol&quot;</span>, <span class="string">&quot;calorie (IT) per mole&quot;</span>,
+            <span class="string">&quot;calories (IT) per mole&quot;</span>;
+        @<span class="ident">calorie_per_mole</span>: <span class="number">4.184_E0</span>; <span class="string">&quot;cal/mol&quot;</span>, <span class="string">&quot;calorie per mole&quot;</span>, <span class="string">&quot;calories per mole&quot;</span>;
+        @<span class="ident">calorie_15_per_mole</span>: <span class="number">4.185_80_E0</span>; <span class="string">&quot;cal₁₅/mol&quot;</span>, <span class="string">&quot;calorie (15 °C) per mole&quot;</span>,
+            <span class="string">&quot;calories (15 °C) per mole&quot;</span>;
+        @<span class="ident">calorie_20_per_mole</span>: <span class="number">4.181_90_E0</span>; <span class="string">&quot;cal₂₀/mol&quot;</span>, <span class="string">&quot;calorie (20 °C) per mole&quot;</span>,
+            <span class="string">&quot;calories (20 °C) per mole&quot;</span>;
+        @<span class="ident">calorie_it_nutrition_per_mole</span>: <span class="number">4.186_8_E3</span>; <span class="string">&quot;Cal (IT)/mol&quot;</span>, <span class="string">&quot;Calorie (IT) per mole&quot;</span>,
+            <span class="string">&quot;Calories (IT) per mole&quot;</span>;
+        @<span class="ident">calorie_nutrition_per_mole</span>: <span class="number">4.184_E3</span>; <span class="string">&quot;Cal/mol&quot;</span>, <span class="string">&quot;Calorie per mole&quot;</span>, <span class="string">&quot;Calories per mole&quot;</span>;
+        @<span class="ident">electronvolt_per_mole</span>: <span class="number">1.602_177_E-19</span>; <span class="string">&quot;eV/mol&quot;</span>, <span class="string">&quot;electronvolt per mole&quot;</span>,
+            <span class="string">&quot;electronvolts per mole&quot;</span>;
+        @<span class="ident">erg_per_mole</span>: <span class="number">1.0_E-7</span>; <span class="string">&quot;erg/mol&quot;</span>, <span class="string">&quot;erg per mole&quot;</span>, <span class="string">&quot;ergs per mole&quot;</span>;
+        @<span class="ident">foot_poundal_per_mole</span>: <span class="number">4.214_011_E-2</span>; <span class="string">&quot;ft · pdl/mol&quot;</span>, <span class="string">&quot;foot poundal per mole&quot;</span>,
+            <span class="string">&quot;foot poundals per mole&quot;</span>;
+        @<span class="ident">foot_pound_force_per_mole</span>: <span class="number">1.355_818_E0</span>; <span class="string">&quot;ft · lbf/mol&quot;</span>, <span class="string">&quot;foot pound-force per mole&quot;</span>,
+            <span class="string">&quot;foot pounds-force per mole&quot;</span>;
+        @<span class="ident">kilocalorie_it_per_mole</span>: <span class="number">4.186_8_E3</span>; <span class="string">&quot;kcal (IT)/mol&quot;</span>, <span class="string">&quot;kilocalorie (IT) per mole&quot;</span>,
+            <span class="string">&quot;kilocalories (IT) per mole&quot;</span>;
+        @<span class="ident">kilocalorie_per_mole</span>: <span class="number">4.184_E3</span>; <span class="string">&quot;kcal/mol&quot;</span>, <span class="string">&quot;kilocalorie per mole&quot;</span>,
+            <span class="string">&quot;kilocalories per mole&quot;</span>;
+        @<span class="ident">quad_per_mole</span>: <span class="number">1.055_056_E18</span>; <span class="string">&quot;10¹⁵ Btu (IT)/mol&quot;</span>, <span class="string">&quot;quad per mole&quot;</span>, <span class="string">&quot;quads per mole&quot;</span>;
+        @<span class="ident">therm_ec_per_mole</span>: <span class="number">1.055_06_E8</span>; <span class="string">&quot;thm (EC)/mol&quot;</span>, <span class="string">&quot;therm (EC) per mole&quot;</span>,
+            <span class="string">&quot;therms (EC) per mole&quot;</span>;
+        @<span class="ident">therm_us_per_mole</span>: <span class="number">1.054_804_E8</span>; <span class="string">&quot;thm/mol&quot;</span>, <span class="string">&quot;therm per mole&quot;</span>, <span class="string">&quot;therms per mole&quot;</span>;
+        @<span class="ident">ton_tnt_per_mole</span>: <span class="number">4.184_E9</span>; <span class="string">&quot;t of TNT/mol&quot;</span>, <span class="string">&quot;ton of TNT per mole&quot;</span>, <span class="string">&quot;tons of TNT per mole&quot;</span>;
+        @<span class="ident">watt_second_per_mole</span>: <span class="number">1.0_E0</span>; <span class="string">&quot;W · s/mol&quot;</span>, <span class="string">&quot;watt second per mole&quot;</span>, <span class="string">&quot;watt seconds per mole&quot;</span>;
+    }
+}
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="macro">storage_types</span><span class="macro">!</span> {
+        <span class="kw">use</span> <span class="ident">num</span>::<span class="ident">One</span>;
+        <span class="kw">use</span> <span class="ident">si</span>::<span class="ident">quantities</span>::<span class="kw-2">*</span>;
+        <span class="kw">use</span> <span class="ident">si</span>::<span class="ident">mass</span> <span class="kw">as</span> <span class="ident">m</span>;
+        <span class="kw">use</span> <span class="ident">si</span>::<span class="ident">length</span> <span class="kw">as</span> <span class="ident">l</span>;
+        <span class="kw">use</span> <span class="ident">si</span>::<span class="ident">energy</span> <span class="kw">as</span> <span class="ident">e</span>;
+        <span class="kw">use</span> <span class="ident">si</span>::<span class="ident">time</span> <span class="kw">as</span> <span class="ident">t</span>;
+        <span class="kw">use</span> <span class="ident">si</span>::<span class="ident">amount_of_substance</span> <span class="kw">as</span> <span class="ident">aos</span>;
+        <span class="kw">use</span> <span class="ident">si</span>::<span class="ident">molar_energy</span> <span class="kw">as</span> <span class="ident">me</span>;
+        <span class="kw">use</span> <span class="ident">tests</span>::<span class="ident">Test</span>;
+
+        <span class="attribute">#[<span class="ident">test</span>]</span>
+        <span class="kw">fn</span> <span class="ident">check_dimension</span>() {
+            <span class="kw">let</span> <span class="ident">_base</span>: <span class="ident">MolarEnergy</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Mass</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">kilogram</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                <span class="op">*</span> <span class="ident">Length</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">l</span>::<span class="ident">meter</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                <span class="op">*</span> <span class="ident">Length</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">l</span>::<span class="ident">meter</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                <span class="op">/</span> (<span class="ident">Time</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">t</span>::<span class="ident">second</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                    <span class="op">*</span> <span class="ident">Time</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">t</span>::<span class="ident">second</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                    <span class="op">*</span> <span class="ident">AmountOfSubstance</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">aos</span>::<span class="ident">mole</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>()));
+
+            <span class="kw">let</span> <span class="ident">_derived</span>: <span class="ident">MolarEnergy</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Energy</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">joule</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                <span class="op">/</span> <span class="ident">AmountOfSubstance</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">aos</span>::<span class="ident">mole</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>());
+        }
+
+        <span class="attribute">#[<span class="ident">test</span>]</span>
+        <span class="kw">fn</span> <span class="ident">check_base_units</span>() {
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">m</span>::<span class="ident">kilogram</span>, <span class="ident">me</span>::<span class="ident">kilogram_square_meter_per_second_squared_mole</span><span class="op">&gt;</span>();
+
+            <span class="kw">fn</span> <span class="ident">test</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">m</span>::<span class="ident">Conversion</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>, <span class="ident">ME</span>: <span class="ident">me</span>::<span class="ident">Conversion</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span><span class="op">&gt;</span>() {
+                <span class="ident">Test</span>::<span class="ident">assert_approx_eq</span>(<span class="kw-2">&amp;</span><span class="ident">MolarEnergy</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">ME</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>()),
+                    <span class="kw-2">&amp;</span>(<span class="ident">Mass</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                        <span class="op">*</span> <span class="ident">Length</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">l</span>::<span class="ident">meter</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                        <span class="op">*</span> <span class="ident">Length</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">l</span>::<span class="ident">meter</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                        <span class="op">/</span> (<span class="ident">Time</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">t</span>::<span class="ident">second</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                            <span class="op">*</span> <span class="ident">Time</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">t</span>::<span class="ident">second</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                            <span class="op">*</span> <span class="ident">AmountOfSubstance</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">aos</span>::<span class="ident">mole</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>()))));
+            }
+        }
+
+        <span class="attribute">#[<span class="ident">test</span>]</span>
+        <span class="kw">fn</span> <span class="ident">check_derived_units</span>() {
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">yottajoule</span>, <span class="ident">me</span>::<span class="ident">yottajoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">zettajoule</span>, <span class="ident">me</span>::<span class="ident">zettajoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">exajoule</span>, <span class="ident">me</span>::<span class="ident">exajoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">petajoule</span>, <span class="ident">me</span>::<span class="ident">petajoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">terajoule</span>, <span class="ident">me</span>::<span class="ident">terajoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">gigajoule</span>, <span class="ident">me</span>::<span class="ident">gigajoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">megajoule</span>, <span class="ident">me</span>::<span class="ident">megajoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">kilojoule</span>, <span class="ident">me</span>::<span class="ident">kilojoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">hectojoule</span>, <span class="ident">me</span>::<span class="ident">hectojoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">decajoule</span>, <span class="ident">me</span>::<span class="ident">decajoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">joule</span>, <span class="ident">me</span>::<span class="ident">joule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">decijoule</span>, <span class="ident">me</span>::<span class="ident">decijoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">centijoule</span>, <span class="ident">me</span>::<span class="ident">centijoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">millijoule</span>, <span class="ident">me</span>::<span class="ident">millijoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">microjoule</span>, <span class="ident">me</span>::<span class="ident">microjoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">nanojoule</span>, <span class="ident">me</span>::<span class="ident">nanojoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">picojoule</span>, <span class="ident">me</span>::<span class="ident">picojoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">femtojoule</span>, <span class="ident">me</span>::<span class="ident">femtojoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">attojoule</span>, <span class="ident">me</span>::<span class="ident">attojoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">zeptojoule</span>, <span class="ident">me</span>::<span class="ident">zeptojoule_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">yoctojoule</span>, <span class="ident">me</span>::<span class="ident">yoctojoule_per_mole</span><span class="op">&gt;</span>();
+
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">petawatt_hour</span>, <span class="ident">me</span>::<span class="ident">petawatt_hour_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">terawatt_hour</span>, <span class="ident">me</span>::<span class="ident">terawatt_hour_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">gigawatt_hour</span>, <span class="ident">me</span>::<span class="ident">gigawatt_hour_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">megawatt_hour</span>, <span class="ident">me</span>::<span class="ident">megawatt_hour_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">kilowatt_hour</span>, <span class="ident">me</span>::<span class="ident">kilowatt_hour_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">hectowatt_hour</span>, <span class="ident">me</span>::<span class="ident">hectowatt_hour_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">decawatt_hour</span>, <span class="ident">me</span>::<span class="ident">decawatt_hour_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">watt_hour</span>, <span class="ident">me</span>::<span class="ident">watt_hour_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">milliwatt_hour</span>, <span class="ident">me</span>::<span class="ident">milliwatt_hour_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">microwatt_hour</span>, <span class="ident">me</span>::<span class="ident">microwatt_hour_per_mole</span><span class="op">&gt;</span>();
+
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">btu_it</span>, <span class="ident">me</span>::<span class="ident">btu_it_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">btu</span>, <span class="ident">me</span>::<span class="ident">btu_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">btu_39</span>, <span class="ident">me</span>::<span class="ident">btu_39_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">btu_59</span>, <span class="ident">me</span>::<span class="ident">btu_59_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">btu_60</span>, <span class="ident">me</span>::<span class="ident">btu_60_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">calorie_it</span>, <span class="ident">me</span>::<span class="ident">calorie_it_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">calorie</span>, <span class="ident">me</span>::<span class="ident">calorie_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">calorie_15</span>, <span class="ident">me</span>::<span class="ident">calorie_15_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">calorie_20</span>, <span class="ident">me</span>::<span class="ident">calorie_20_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">calorie_it_nutrition</span>, <span class="ident">me</span>::<span class="ident">calorie_it_nutrition_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">calorie_nutrition</span>, <span class="ident">me</span>::<span class="ident">calorie_nutrition_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">electronvolt</span>, <span class="ident">me</span>::<span class="ident">electronvolt_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">erg</span>, <span class="ident">me</span>::<span class="ident">erg_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">foot_poundal</span>, <span class="ident">me</span>::<span class="ident">foot_poundal_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">foot_pound</span>, <span class="ident">me</span>::<span class="ident">foot_pound_force_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">kilocalorie_it</span>, <span class="ident">me</span>::<span class="ident">kilocalorie_it_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">kilocalorie</span>, <span class="ident">me</span>::<span class="ident">kilocalorie_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">quad</span>, <span class="ident">me</span>::<span class="ident">quad_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">therm_ec</span>, <span class="ident">me</span>::<span class="ident">therm_ec_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">therm_us</span>, <span class="ident">me</span>::<span class="ident">therm_us_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">ton_tnt</span>, <span class="ident">me</span>::<span class="ident">ton_tnt_per_mole</span><span class="op">&gt;</span>();
+            <span class="ident">test</span>::<span class="op">&lt;</span><span class="ident">e</span>::<span class="ident">watt_second</span>, <span class="ident">me</span>::<span class="ident">watt_second_per_mole</span><span class="op">&gt;</span>();
+
+            <span class="kw">fn</span> <span class="ident">test</span><span class="op">&lt;</span><span class="ident">E</span>: <span class="ident">e</span>::<span class="ident">Conversion</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>, <span class="ident">ME</span>: <span class="ident">me</span>::<span class="ident">Conversion</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span><span class="op">&gt;</span>() {
+                <span class="ident">Test</span>::<span class="ident">assert_approx_eq</span>(<span class="kw-2">&amp;</span><span class="ident">MolarEnergy</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">ME</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>()),
+                    <span class="kw-2">&amp;</span>(<span class="ident">Energy</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())
+                        <span class="op">/</span> <span class="ident">AmountOfSubstance</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">aos</span>::<span class="ident">mole</span><span class="op">&gt;</span>(<span class="ident">V</span>::<span class="ident">one</span>())));
+            }
+        }
+    }
+}
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "uom";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

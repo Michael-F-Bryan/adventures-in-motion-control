@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["DecodeError","An error encountered while decoding."],["EncodeError","An error encountered while encoding a `Packet`."]],"struct":[["EmptyPacket","The packet was empty."],["InsufficientCapacity","There wasn't enough space left to complete the operation."]]});

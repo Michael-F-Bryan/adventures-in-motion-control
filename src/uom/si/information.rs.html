@@ -1,0 +1,163 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/uom-0.26.0/src/si/information.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>information.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../uom/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
+<span id="2"> 2</span>
+<span id="3"> 3</span>
+<span id="4"> 4</span>
+<span id="5"> 5</span>
+<span id="6"> 6</span>
+<span id="7"> 7</span>
+<span id="8"> 8</span>
+<span id="9"> 9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="doccomment">//! Information (dimensionless quantity).</span>
+
+<span class="macro">quantity</span><span class="macro">!</span> {
+    <span class="doccomment">/// Information (dimensionless quantity).</span>
+    <span class="ident">quantity</span>: <span class="ident">Information</span>; <span class="string">&quot;information&quot;</span>;
+    <span class="doccomment">/// Dimension of information, 1 (dimensionless).</span>
+    <span class="ident">dimension</span>: <span class="ident">ISQ</span><span class="op">&lt;</span>
+        <span class="ident">Z0</span>,     <span class="comment">// length</span>
+        <span class="ident">Z0</span>,     <span class="comment">// mass</span>
+        <span class="ident">Z0</span>,     <span class="comment">// time</span>
+        <span class="ident">Z0</span>,     <span class="comment">// electric current</span>
+        <span class="ident">Z0</span>,     <span class="comment">// thermodynamic temperature</span>
+        <span class="ident">Z0</span>,     <span class="comment">// amount of substance</span>
+        <span class="ident">Z0</span><span class="op">&gt;</span>;    <span class="comment">// luminous intensity</span>
+    <span class="ident">kind</span>: <span class="ident">dyn</span>(::<span class="ident">si</span>::<span class="ident">marker</span>::<span class="ident">InformationKind</span>);
+    <span class="ident">units</span> {
+        <span class="comment">// Base-2.</span>
+        @<span class="ident">yobibit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">yobi</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Yib&quot;</span>, <span class="string">&quot;yobibit&quot;</span>, <span class="string">&quot;yobibits&quot;</span>;
+        @<span class="ident">yottabit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">yotta</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Yb&quot;</span>, <span class="string">&quot;yottabit&quot;</span>, <span class="string">&quot;yottabits&quot;</span>;
+        @<span class="ident">zebibit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">zebi</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Zib&quot;</span>, <span class="string">&quot;zebibit&quot;</span>, <span class="string">&quot;zebibits&quot;</span>;
+        @<span class="ident">zettabit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">zetta</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Zb&quot;</span>, <span class="string">&quot;zettabit&quot;</span>, <span class="string">&quot;zettabits&quot;</span>;
+        @<span class="ident">exbibit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">exbi</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Eib&quot;</span>, <span class="string">&quot;exbibit&quot;</span>, <span class="string">&quot;exbibits&quot;</span>;
+        @<span class="ident">exabit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">exa</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Eb&quot;</span>, <span class="string">&quot;exabit&quot;</span>, <span class="string">&quot;exabits&quot;</span>;
+        @<span class="ident">pebibit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">pebi</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Pib&quot;</span>, <span class="string">&quot;pebibit&quot;</span>, <span class="string">&quot;pebibits&quot;</span>;
+        @<span class="ident">petabit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">peta</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Pb&quot;</span>, <span class="string">&quot;petabit&quot;</span>, <span class="string">&quot;petabits&quot;</span>;
+        @<span class="ident">tebibit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">tebi</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Tib&quot;</span>, <span class="string">&quot;tibibit&quot;</span>, <span class="string">&quot;tibibits&quot;</span>;
+        @<span class="ident">terabit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">tera</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Tb&quot;</span>, <span class="string">&quot;terabit&quot;</span>, <span class="string">&quot;terabits&quot;</span>;
+        @<span class="ident">gibibit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">gibi</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Gib&quot;</span>, <span class="string">&quot;gibibit&quot;</span>, <span class="string">&quot;gibibits&quot;</span>;
+        @<span class="ident">gigabit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">giga</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Gb&quot;</span>, <span class="string">&quot;gigabit&quot;</span>, <span class="string">&quot;gigabits&quot;</span>;
+        @<span class="ident">mebibit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">mebi</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Mib&quot;</span>, <span class="string">&quot;mebibit&quot;</span>, <span class="string">&quot;mebibits&quot;</span>;
+        @<span class="ident">megabit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">mega</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Mb&quot;</span>, <span class="string">&quot;megabit&quot;</span>, <span class="string">&quot;megabits&quot;</span>;
+        @<span class="ident">kibibit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kibi</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Kib&quot;</span>, <span class="string">&quot;kibibit&quot;</span>, <span class="string">&quot;kibibits&quot;</span>;
+        @<span class="ident">kilobit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;kb&quot;</span>, <span class="string">&quot;kilobit&quot;</span>, <span class="string">&quot;kilobits&quot;</span>;
+        <span class="doccomment">/// The bit is the basic unit of information.</span>
+        <span class="doccomment">///</span>
+        <span class="doccomment">/// Although the bit is the base unit of information `uom` treats it as a derived unit. The</span>
+        <span class="doccomment">/// byte is treated as the base unit in order to provide more accurate conversion factors</span>
+        <span class="doccomment">/// for byte derived units which are more commonly used than bits.</span>
+        @<span class="ident">bit</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">none</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;b&quot;</span>, <span class="string">&quot;bit&quot;</span>, <span class="string">&quot;bits&quot;</span>;
+
+        @<span class="ident">yobibyte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">yobi</span>); <span class="string">&quot;YiB&quot;</span>, <span class="string">&quot;yobibyte&quot;</span>, <span class="string">&quot;yobibytes&quot;</span>;
+        @<span class="ident">yottabyte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">yotta</span>); <span class="string">&quot;YB&quot;</span>, <span class="string">&quot;yottabyte&quot;</span>, <span class="string">&quot;yottabytes&quot;</span>;
+        @<span class="ident">zebibyte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">zebi</span>); <span class="string">&quot;ZiB&quot;</span>, <span class="string">&quot;zebibyte&quot;</span>, <span class="string">&quot;zebibytes&quot;</span>;
+        @<span class="ident">zettabyte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">zetta</span>); <span class="string">&quot;ZB&quot;</span>, <span class="string">&quot;zettabyte&quot;</span>, <span class="string">&quot;zettabytes&quot;</span>;
+        @<span class="ident">exbibyte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">exbi</span>); <span class="string">&quot;EiB&quot;</span>, <span class="string">&quot;exbibyte&quot;</span>, <span class="string">&quot;exbibytes&quot;</span>;
+        @<span class="ident">exabyte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">exa</span>); <span class="string">&quot;EB&quot;</span>, <span class="string">&quot;exabyte&quot;</span>, <span class="string">&quot;exabytes&quot;</span>;
+        @<span class="ident">pebibyte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">pebi</span>); <span class="string">&quot;PiB&quot;</span>, <span class="string">&quot;pebibyte&quot;</span>, <span class="string">&quot;pebibytes&quot;</span>;
+        @<span class="ident">petabyte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">peta</span>); <span class="string">&quot;PB&quot;</span>, <span class="string">&quot;petabyte&quot;</span>, <span class="string">&quot;petabytes&quot;</span>;
+        @<span class="ident">tebibyte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">tebi</span>); <span class="string">&quot;TiB&quot;</span>, <span class="string">&quot;tibibyte&quot;</span>, <span class="string">&quot;tibibytes&quot;</span>;
+        @<span class="ident">terabyte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">tera</span>); <span class="string">&quot;TB&quot;</span>, <span class="string">&quot;terabyte&quot;</span>, <span class="string">&quot;terabytes&quot;</span>;
+        @<span class="ident">gibibyte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">gibi</span>); <span class="string">&quot;GiB&quot;</span>, <span class="string">&quot;gibibyte&quot;</span>, <span class="string">&quot;gibibytes&quot;</span>;
+        @<span class="ident">gigabyte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">giga</span>); <span class="string">&quot;GB&quot;</span>, <span class="string">&quot;gigabyte&quot;</span>, <span class="string">&quot;gigabytes&quot;</span>;
+        @<span class="ident">mebibyte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">mebi</span>); <span class="string">&quot;MiB&quot;</span>, <span class="string">&quot;mebibyte&quot;</span>, <span class="string">&quot;mebibytes&quot;</span>;
+        @<span class="ident">megabyte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">mega</span>); <span class="string">&quot;MB&quot;</span>, <span class="string">&quot;megabyte&quot;</span>, <span class="string">&quot;megabytes&quot;</span>;
+        @<span class="ident">kibibyte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kibi</span>); <span class="string">&quot;KiB&quot;</span>, <span class="string">&quot;kibibyte&quot;</span>, <span class="string">&quot;kibibytes&quot;</span>;
+        @<span class="ident">kilobyte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">kilo</span>); <span class="string">&quot;kB&quot;</span>, <span class="string">&quot;kilobyte&quot;</span>, <span class="string">&quot;kilobytes&quot;</span>;
+        <span class="doccomment">/// The byte is a unit of information consisting of 8 bits.</span>
+        <span class="doccomment">///</span>
+        <span class="doccomment">/// Although the bit is the base unit of information `uom` treats it as a derived unit. The</span>
+        <span class="doccomment">/// byte is treated as the base unit in order to provide more accurate conversion factors</span>
+        <span class="doccomment">/// for byte derived units which are more commonly used than bits.</span>
+        @<span class="ident">byte</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">none</span>); <span class="string">&quot;B&quot;</span>, <span class="string">&quot;byte&quot;</span>, <span class="string">&quot;bytes&quot;</span>;
+
+        @<span class="ident">octet</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">none</span>); <span class="string">&quot;o&quot;</span>, <span class="string">&quot;octet&quot;</span>, <span class="string">&quot;octets&quot;</span>;
+        @<span class="ident">nibble</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">none</span>) <span class="op">/</span> <span class="number">2.0</span>; <span class="string">&quot;nibble&quot;</span>, <span class="string">&quot;nibble&quot;</span>, <span class="string">&quot;nibbles&quot;</span>;
+        @<span class="ident">crumb</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">none</span>) <span class="op">/</span> <span class="number">4.0</span>; <span class="string">&quot;crumb&quot;</span>, <span class="string">&quot;crumb&quot;</span>, <span class="string">&quot;crumbs&quot;</span>;
+        @<span class="ident">shannon</span>: <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">none</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Sh&quot;</span>, <span class="string">&quot;shannon&quot;</span>, <span class="string">&quot;shannons&quot;</span>;
+
+        <span class="comment">// Base-e. ln(2).</span>
+        @<span class="ident">natural_unit_of_information</span>: <span class="number">1.442_695_040_888_963_E0</span> <span class="op">*</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">none</span>) <span class="op">/</span> <span class="number">8.0</span>;
+            <span class="string">&quot;nat&quot;</span>, <span class="string">&quot;natural unit of uniformation&quot;</span>, <span class="string">&quot;natural units of information&quot;</span>;
+
+        <span class="comment">// Base-3. log2(3).</span>
+        @<span class="ident">trit</span>: <span class="number">1.584_962_500_721_156_E0</span> <span class="op">*</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">none</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;trit&quot;</span>, <span class="string">&quot;trit&quot;</span>, <span class="string">&quot;trits&quot;</span>;
+
+        <span class="comment">// Base-10. log2(10).</span>
+        @<span class="ident">hartley</span>: <span class="number">3.321_928_094_887_363_E0</span> <span class="op">*</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">none</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;Hart&quot;</span>, <span class="string">&quot;hartley&quot;</span>, <span class="string">&quot;hartleys&quot;</span>;
+        @<span class="ident">deciban</span>: <span class="number">3.321_928_094_887_363_E0</span> <span class="op">*</span> <span class="macro">prefix</span><span class="macro">!</span>(<span class="ident">deci</span>) <span class="op">/</span> <span class="number">8.0</span>; <span class="string">&quot;deciban&quot;</span>, <span class="string">&quot;deciban&quot;</span>, <span class="string">&quot;decibans&quot;</span>;
+    }
+}
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "uom";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
